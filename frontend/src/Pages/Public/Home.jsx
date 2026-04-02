@@ -1,63 +1,100 @@
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { gsap } from 'gsap';
+import { Link } from 'react-router-dom'; // Imported Link for routing
+import { gsap } from 'gsap'; // Imported GSAP for animations
 import './Home.css';
 
-const Home = () => {
-  const cardsRef = useRef([]);
+import { Stethoscope, Star, UserCheck, Clock, ShieldCheck, Users, Calendar, Phone } from 'lucide-react'; 
 
-  // Helper to push card refs to the array
-  const addToRefs = (el) => {
-    if (el && !cardsRef.current.includes(el)) {
-      cardsRef.current.push(el);
-    }
-  };
+import hospitalImg from '../../assets/hospitalimg.png'; 
+
+const Home = () => {
+  // Refs for GSAP animations
+  const contentRef = useRef(null);
+  const imageRef = useRef(null);
 
   useEffect(() => {
-    // GSAP Animation: Slide up and fade in cards
-    gsap.from(cardsRef.current, {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      stagger: 0.2,
-      ease: "power2.out",
-      delay: 0.3 // Starts slightly after navbar animation
-    });
+    // GSAP Timeline to stagger the hero section animations smoothly
+    const tl = gsap.timeline({ delay: 0.2 }); // Slight delay to let the Navbar animate first
+
+    // Animate the left-side text content (cascading up)
+    tl.fromTo(contentRef.current.children,
+      { y: 40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.6, stagger: 0.15, ease: "power2.out" }
+    )
+    // Animate the hero image (sliding in from the right with a slight scale)
+    .fromTo(imageRef.current,
+      { x: 50, opacity: 0, scale: 0.95 },
+      { x: 0, opacity: 1, scale: 1, duration: 0.8, ease: "power3.out" },
+      "-=0.5" // This makes the image start animating slightly before the text finishes
+    );
   }, []);
 
   return (
-    <div className="home-container">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <h1>Smart Hospital Management System</h1>
-        <p>Advanced healthcare scheduling, patient management, and digital reports—all in one secure platform.</p>
-        <div className="hero-buttons">
-          <Link to="/appointment" className="btn-primary">Book Appointment</Link>
-          <Link to="/schedule" className="btn-secondary">View Doctors</Link>
+    <section className="home-hero-container">
+      
+      {/* Left Content Area attached to contentRef for animation */}
+      <div className="hero-content" ref={contentRef}>
+        
+        <div className="logo-section">
+          <div className="icon-circle">
+            <Stethoscope size={24} color="#ffffff" />
+          </div>
+          <h1 className="brand-title">GS Healthcare</h1>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="features-section">
-        <div className="feature-card" ref={addToRefs}>
-          <div className="icon">📅</div>
-          <h3>Easy Booking</h3>
-          <p>Book appointments dynamically based on real-time doctor availability and department.</p>
+        <div className="rating-section">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} size={18} fill="#fbbf24" color="#fbbf24" className="star-icon" />
+          ))}
         </div>
-        
-        <div className="feature-card" ref={addToRefs}>
-          <div className="icon">📄</div>
-          <h3>Digital Reports</h3>
-          <p>Securely access your checkups, statuses, and uploaded prescriptions from anywhere.</p>
+
+        <h2 className="hero-tagline">
+          Premium Healthcare <br /> At Your Fingertips
+        </h2>
+
+        <div className="feature-tags-container">
+          <div className="tag-row">
+            <div className="feature-pill green-pill">
+              <UserCheck size={16} className="pill-icon" />
+              <span>Certified Specialists</span>
+            </div>
+            <div className="feature-pill green-pill">
+              <Clock size={16} className="pill-icon" />
+              <span>24/7 Availability</span>
+            </div>
+          </div>
+          <div className="tag-row">
+            <div className="feature-pill green-pill">
+              <ShieldCheck size={16} className="pill-icon" />
+              <span>Safe & Secure</span>
+            </div>
+            <div className="feature-pill green-pill">
+              <Users size={16} className="pill-icon" />
+              <span>500+ Doctors</span>
+            </div>
+          </div>
         </div>
-        
-        <div className="feature-card" ref={addToRefs}>
-          <div className="icon">👨‍⚕️</div>
-          <h3>Doctor Scheduling</h3>
-          <p>Hospital managers can easily set and update day-wise schedules for all medical staff.</p>
+
+        <div className="hero-buttons-container">
+          {/* UPDATED: Changed from <button> to <Link> to enable routing */}
+          <Link to="/appointment" className="btn-primary-green" style={{ textDecoration: 'none' }}>
+            <Calendar size={18} className="btn-icon" />
+            Book Appointment Now
+          </Link>
+          
+          <button className="btn-primary-red">
+            <Phone size={18} className="btn-icon" />
+            Emergency Call
+          </button>
         </div>
-      </section>
-    </div>
+      </div>
+
+      {/* Right Image Area attached to imageRef for animation */}
+      <div className="hero-image" ref={imageRef}>
+        <img src={hospitalImg} alt="GS Healthcare Team" />
+      </div>
+      
+    </section>
   );
 };
 

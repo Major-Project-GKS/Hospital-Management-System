@@ -1,103 +1,182 @@
-/* src/Pages/Public/Home.css */
-.home-container {
-  min-height: calc(100vh - 70px); /* Subtracting navbar height roughly */
+/* src/components/home.css */
+
+/* Hero Container */
+.home-hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 20px;
+  margin: 20px auto;
+  max-width: 1200px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
+  /* Top and bottom teal borders */
+  border-top: 4px solid #2dd4bf; 
+  border-bottom: 4px solid #2dd4bf;
+}
+
+/* Left Content Section */
+.hero-content {
+  flex: 1;
+  padding-right: 30px;
+}
+
+/* Logo & Brand Title */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2dd4bf; /* Teal background for icon */
+  color: #ffffff;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 24px;
+}
+
+.brand-title {
+  color: #1e3a8a; /* Dark navy serif color */
+  font-family: serif; 
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Star Rating */
+.rating-section {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 15px;
+}
+
+.star-icon {
+  color: #fbbf24; /* Yellow color for stars */
+  font-size: 16px;
+}
+
+/* Hero Tagline */
+.hero-tagline {
+  color: #1e1e1e;
+  font-family: sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0 0 25px 0;
+}
+
+.hero-tagline br {
+  display: none; /* Hide <br> on mobile if needed */
+}
+
+/* Feature Pill Tags */
+.feature-tags-container {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.tag-row {
+  display: flex;
+  gap: 10px;
+}
+
+.feature-pill {
+  display: flex;
   align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 30px;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-size: 14px;
 }
 
-/* Hero Section */
-.hero-section {
-  text-align: center;
-  padding: 6rem 2rem;
-  max-width: 800px;
+.green-pill {
+  background-color: #2dd4bf; /* Teal background for pills */
 }
 
-.hero-section h1 {
-  font-size: 3rem;
-  color: var(--primary-color);
-  margin-bottom: 1.5rem;
+.pill-icon {
+  font-size: 14px;
 }
 
-.hero-section p {
-  font-size: 1.2rem;
-  color: var(--text-light);
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
-}
-
-.hero-buttons {
+/* Action Buttons */
+.hero-buttons-container {
   display: flex;
-  justify-content: center;
-  gap: 1.5rem;
+  gap: 15px;
 }
 
-.btn-primary, .btn-secondary {
-  padding: 0.8rem 2rem;
-  border-radius: 8px;
-  font-size: 1.1rem;
+.btn-primary-green, .btn-primary-red {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  font-family: sans-serif;
+  font-size: 16px;
   font-weight: 600;
-  transition: var(--transition);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
-.btn-primary {
-  background-color: var(--primary-color);
-  color: var(--white);
-  border: 2px solid var(--primary-color);
+.btn-primary-green:hover, .btn-primary-red:hover {
+  opacity: 0.9;
 }
 
-.btn-primary:hover {
-  background-color: var(--primary-hover);
-  border-color: var(--primary-hover);
+.btn-primary-green {
+  background-color: #2dd4bf; /* Teal background for button */
+  color: #ffffff;
 }
 
-.btn-secondary {
-  background-color: transparent;
-  color: var(--primary-color);
-  border: 2px solid var(--primary-color);
+.btn-primary-red {
+  background-color: #f87171; /* Red background for emergency */
+  color: #ffffff;
 }
 
-.btn-secondary:hover {
-  background-color: var(--secondary-color);
+.btn-icon {
+  font-size: 16px;
 }
 
-/* Features Section */
-.features-section {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  padding: 2rem;
+/* Right Image Section */
+.hero-image {
+  flex: 1;
+}
+
+.hero-image img {
   width: 100%;
-  max-width: 1200px;
-  flex-wrap: wrap;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
-.feature-card {
-  background-color: var(--white);
-  padding: 2.5rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  text-align: center;
-  transition: transform 0.3s ease;
-}
-
-.feature-card:hover {
-  transform: translateY(-10px);
-}
-
-.feature-card .icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.feature-card h3 {
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-  font-size: 1.3rem;
-}
-
-.feature-card p {
-  color: var(--text-light);
-  line-height: 1.5;
+/* Responsiveness for Mobile Devices */
+@media (max-width: 768px) {
+  .home-hero-container {
+    flex-direction: column-reverse; /* Stack image first on mobile */
+    padding: 20px;
+  }
+  
+  .hero-content {
+    padding-right: 0;
+    margin-top: 20px;
+    text-align: center;
+    align-items: center;
+  }
+  
+  .logo-section, .rating-section, .tag-row, .hero-buttons-container {
+    justify-content: center;
+  }
+  
+  .tag-row {
+    flex-wrap: wrap; /* Allow pills to wrap on smaller screens */
+  }
 }
