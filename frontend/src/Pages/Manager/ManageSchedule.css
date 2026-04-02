@@ -1,0 +1,62 @@
+/* src/Pages/Manager/ManageSchedule.css */
+.manage-schedule-container {
+  padding: 3rem;
+  background-color: var(--bg-light);
+  min-height: calc(100vh - 70px);
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.btn-back {
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.schedule-form-panel, .schedule-list-panel {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.time-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-submit-schedule {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.schedule-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--primary-color);
+}

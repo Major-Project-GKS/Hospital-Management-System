@@ -1,0 +1,130 @@
+/* src/Pages/Doctor/PatientQueue.css */
+.patient-queue-component {
+  width: 100%;
+}
+
+.queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.queue-header h2 {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
+
+.queue-search {
+  padding: 0.6rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  width: 300px;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.queue-search:focus {
+  border-color: var(--primary-color);
+}
+
+.queue-table-wrapper {
+  background-color: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  overflow-x: auto;
+}
+
+.queue-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.queue-table th, .queue-table td {
+  padding: 1.2rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.queue-table th {
+  background-color: #f8fafc;
+  color: var(--text-light);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.queue-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.queue-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.queue-table tbody tr.absent {
+  opacity: 0.7;
+}
+
+/* Status Pills */
+.status-pill {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.status-pill.waiting { background-color: #fef3c7; color: #b45309; }
+.status-pill.completed { background-color: #dcfce7; color: #15803d; }
+.status-pill.absent { background-color: #fee2e2; color: #b91c1c; }
+
+/* Action Buttons */
+.queue-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-mark {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-mark.complete { background-color: #10b981; color: white; }
+.btn-mark.complete:hover { background-color: #059669; }
+
+.btn-mark.absent { background-color: #ef4444; color: white; }
+.btn-mark.absent:hover { background-color: #dc2626; }
+
+.btn-presc {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
+  transition: background-color 0.2s ease;
+}
+
+.btn-presc:hover {
+  background-color: var(--primary-hover);
+}
+
+.text-muted {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.queue-empty {
+  text-align: center;
+  color: var(--text-light);
+  padding: 3rem !important;
+}

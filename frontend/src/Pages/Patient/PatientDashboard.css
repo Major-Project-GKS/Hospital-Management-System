@@ -1,0 +1,131 @@
+/* src/Pages/Patient/PatientDashboard.css */
+.patient-dashboard {
+  display: flex;
+  min-height: calc(100vh - 70px);
+  background-color: var(--bg-light);
+}
+
+/* Sidebar (Reusing layout styles from Doctor) */
+.dashboard-sidebar {
+  width: 260px;
+  background-color: var(--white);
+  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.user-profile {
+  text-align: center;
+  padding: 2rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.user-profile .avatar { font-size: 3.5rem; margin-bottom: 0.5rem; }
+.user-profile h3 { color: var(--text-dark); margin-bottom: 0.2rem; }
+.user-profile p { color: var(--text-light); font-size: 0.9rem; font-weight: bold;}
+
+.sidebar-menu { list-style: none; padding: 1rem 0; flex: 1; }
+.sidebar-menu li {
+  padding: 1rem 2rem;
+  color: var(--text-light);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+.sidebar-menu li:hover { background-color: #f1f5f9; color: var(--primary-color); }
+.sidebar-menu li.active { background-color: #eff6ff; color: var(--primary-color); border-left-color: var(--primary-color); }
+.sidebar-link { color: inherit; display: block; width: 100%; }
+
+.logout-btn { color: #ef4444 !important; margin-top: auto; border-top: 1px solid #e2e8f0; }
+
+/* Main Content */
+.dashboard-content { flex: 1; padding: 2.5rem; overflow-y: auto; }
+.dashboard-content h2 { color: var(--text-dark); font-size: 2rem; margin-bottom: 0.2rem; }
+.subtitle { color: var(--text-light); margin-bottom: 2rem; }
+
+/* Cards Grid */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.dash-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.primary-card { border-top: 4px solid var(--primary-color); }
+
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.card-header h3 { color: var(--text-dark); }
+
+.badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+.badge.confirmed { background-color: #dbeafe; color: #1e40af; }
+.badge.completed { background-color: #dcfce7; color: #166534; }
+
+.card-body p { margin-bottom: 0.8rem; color: var(--text-light); }
+.card-body strong { color: var(--text-dark); }
+
+.ticket-info {
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+.ticket-info p { margin: 0; }
+.highlight { color: #e11d48 !important; font-size: 1.2rem; }
+
+/* Actions Card */
+.action-card h3 { margin-bottom: 1.5rem; color: var(--text-dark); }
+.btn-action {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border-radius: 6px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.btn-action:hover { background-color: var(--primary-hover); }
+.btn-action.outline { background-color: transparent; border: 2px solid var(--primary-color); color: var(--primary-color); }
+.btn-action.outline:hover { background-color: #eff6ff; }
+
+/* History Section */
+.history-list { display: flex; flex-direction: column; gap: 1rem; }
+.history-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--white);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border-left: 4px solid #10b981;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.hist-details h4 { color: var(--text-dark); margin-bottom: 0.3rem; }
+.hist-details h4 span { color: var(--text-light); font-weight: normal; font-size: 0.9rem; }
+.hist-details p { color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem; }
+
+.btn-download {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-download:hover { background-color: #e2e8f0; color: var(--primary-color); }

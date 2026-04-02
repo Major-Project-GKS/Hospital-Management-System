@@ -1,0 +1,219 @@
+/* =========================================
+   1. GLOBAL VARIABLES & BROWSER RESET
+   ========================================= */
+:root {
+  --theme-green: #059669; /* Primary Emerald Green */
+  --theme-green-hover: #047857;
+  --theme-green-light: #d1fae5;
+  --theme-green-glow: rgba(5, 150, 105, 0.3);
+  --text-dark-blue: #1e293b;
+  --text-gray: #64748b;
+  --nav-height: 80px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f8fafc;
+  color: var(--text-dark-blue);
+  padding-top: var(--nav-height); 
+  overflow-x: hidden; 
+}
+
+a {
+  text-decoration: none;
+}
+
+/* =========================================
+   2. MODERN NAVBAR STYLES
+   ========================================= */
+.modern-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: var(--nav-height);
+  background-color: rgba(255, 255, 255, 0.95); /* Slight transparency for a modern feel */
+  backdrop-filter: blur(10px); /* Blurs content behind the navbar */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  z-index: 9999;
+}
+
+/* --- LEFT: BRANDING --- */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.brand-icon {
+  width: 50px;
+  height: 50px;
+  background-color: var(--theme-green-light);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--theme-green);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Hover: Logo Spin/Scale effect */
+.nav-brand:hover .brand-icon {
+  transform: rotate(15deg) scale(1.05);
+  box-shadow: 0 4px 12px var(--theme-green-glow);
+}
+
+.brand-text a {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-text h1 {
+  color: var(--theme-green);
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+}
+
+.brand-text p {
+  color: var(--text-gray);
+  font-size: 0.85rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* --- CENTER: PILL MENU --- */
+.nav-menu-container {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 50px; 
+  padding: 4px;
+  box-shadow: 0 4px 10px -1px var(--theme-green-glow); 
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.nav-menu li {
+  position: relative;
+}
+
+.nav-menu a {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  color: var(--text-dark-blue);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 40px;
+  transition: all 0.3s ease;
+}
+
+/* Hover: Soft pill background */
+.nav-menu a:hover {
+  color: var(--theme-green);
+  background-color: var(--theme-green-light);
+}
+
+/* Active State */
+.nav-menu li.active a {
+  color: var(--theme-green);
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.nav-menu li.active::after {
+  content: '';
+  position: absolute;
+  bottom: -6px; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: var(--theme-green);
+  border-radius: 50%;
+}
+
+/* --- RIGHT: ACTIONS --- */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-outline, .btn-solid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy hover transition */
+}
+
+/* Hover: Outline Button */
+.btn-outline {
+  border: 2px solid var(--theme-green);
+  color: var(--theme-green);
+  background-color: transparent;
+}
+
+.btn-outline:hover {
+  background-color: var(--theme-green);
+  color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px var(--theme-green-glow);
+}
+
+/* Hover: Solid Button */
+.btn-solid {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 10px var(--theme-green-glow); 
+}
+
+.btn-solid:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.5); /* Stronger glow on hover */
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 1100px) {
+  .nav-menu-container { display: none; } 
+  .nav-actions span { display: none; } 
+  .nav-brand { gap: 8px; }
+  .brand-text h1 { font-size: 1.3rem; }
+}
+
+/* --- CUSTOM LOGO STYLES --- */
+.nav-logo-img {
+  height: 55px; /* Adjust this to make your logo bigger or smaller */
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Adds a nice subtle bounce scale when you hover over your logo */
+.nav-brand:hover .nav-logo-img {
+  transform: scale(1.05);
+}
