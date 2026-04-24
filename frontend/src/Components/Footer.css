@@ -1,0 +1,279 @@
+/* src/Components/Footer.css */
+
+.footer-wrapper {
+  background-color: #f0fdf4; /* Light mint green background */
+  color: #064e3b; /* Dark emerald green text */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Top Main Section (Grid Layout) --- */
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr; /* Matches the spacing in the image */
+  gap: 3rem;
+  padding: 4rem 5%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.footer-col h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #064e3b;
+}
+
+/* --- Column 1: Brand --- */
+.footer-logo {
+  display: flex;
+  margin-top: -26px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.footer-logo-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.brand-text h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #059669; /* Theme green */
+  margin: 0;
+}
+
+.brand-text p {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0;
+  color: #064e3b;
+}
+
+.brand-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  color: #064e3b;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Reusable Icon Circles */
+.icon-circle {
+  width: 32px;
+  height: 32px;
+  background-color: #d1fae5;
+  color: #059669;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-circle-small {
+  width: 24px;
+  height: 24px;
+  background-color: #d1fae5;
+  color: #059669;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- Columns 2 & 3: Lists --- */
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.links-col a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #064e3b;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-left: -12px; /* Pulls it back slightly to align */
+}
+
+.links-col a:hover, .active-link a {
+  background-color: #dcfce7; /* Light green hover box */
+}
+
+.services-col li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #059669;
+  border-radius: 50%;
+}
+
+/* --- Column 4: Newsletter & Socials --- */
+.connect-col p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.subscribe-box {
+  display: flex;
+  background-color: #ffffff;
+  border-radius: 50px;
+  padding: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  border: 1px solid #d1fae5;
+}
+
+.subscribe-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  color: #064e3b;
+  background: transparent;
+}
+
+.subscribe-box button {
+  background-color: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.3s;
+}
+
+.subscribe-box button:hover {
+  background-color: #047857;
+}
+
+.social-icons {
+  display: flex;
+  gap: 12px;
+}
+
+.social-icons a {
+  width: 40px;
+  height: 40px;
+  background-color: #ffffff;
+  color: #059669;
+  border-radius: 10px; /* Squircle shape */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+  background-color: #059669;
+  color: #ffffff;
+  transform: translateY(-3px);
+}
+
+/* --- Bottom Bar --- */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 5%;
+  border-top: 1px solid #d1fae5;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.footer-bottom p {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.footer-bottom strong {
+  color: #059669;
+}
+
+.scroll-top-btn {
+  position: absolute;
+  right: 5%;
+  top: -25px; /* Pulls it up out of the bottom bar */
+  width: 50px;
+  height: 50px;
+  background-color: #059669;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+  transition: transform 0.3s;
+}
+
+.scroll-top-btn:hover {
+  transform: translateY(-5px);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 1024px) {
+  .footer-top {
+    grid-template-columns: 1fr 1fr; /* 2x2 grid on tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-top {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 2.5rem;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  .scroll-top-btn {
+    position: static;
+    margin-top: 1rem;
+  }
+}

@@ -79,14 +79,14 @@ const Navbar = () => {
           <li ref={addToMenuRefs} className={isActive('/schedule') ? 'active' : ''}>
             <Link to="/schedule">Doctors</Link>
           </li>
-          <li ref={addToMenuRefs} className={isActive('/services') ? 'active' : ''}>
+          {/* <li ref={addToMenuRefs} className={isActive('/services') ? 'active' : ''}>
             <Link to="#services">Services</Link>
-          </li>
+          </li> */}
           <li ref={addToMenuRefs} className={isActive('/appointment') ? 'active' : ''}>
             <Link to="/appointment">Appointments</Link>
           </li>
           <li ref={addToMenuRefs} className={isActive('/contact') ? 'active' : ''}>
-            <Link to="#contact">Contact</Link>
+            <Link to="/Contact">Contact</Link>
           </li>
         </ul>
       </div>

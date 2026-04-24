@@ -1,0 +1,157 @@
+/* src/components/CertifiedExcellence.css */
+
+/* Main Section */
+.certified-excellence {
+  background-color: #ffffff;
+  padding: 60px 0;
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif; /* Serfif font for title, sans-serif for others as per image */
+}
+
+/* Header Container */
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+/* Title and Flanking Lines */
+.title-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  position: relative;
+  width: 100%;
+}
+
+.title-section h1 {
+  color: #008080; /* Teal color */
+  font-size: 4em;
+  font-weight: bold;
+  margin: 0;
+  white-space: nowrap; /* Keep on one line */
+  font-family: Georgia, serif; /* Serfif font for title to match image */
+}
+
+.title-gap {
+  width: 20px;
+}
+
+/* Line Pattern Logic */
+.line-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.dash {
+  width: 15px; /* Short dash width */
+  height: 2px;
+  background-color: #008080;
+}
+
+.long-line {
+  flex: 1; /* Extend to fill space */
+  height: 2px;
+  background-color: #008080;
+  margin: 0 10px; /* Space between dash and long line */
+}
+
+/* Subtitle */
+.subtitle {
+  color: #7d7d7d;
+  font-size: 1.2em;
+  font-weight: 300;
+  margin: 0 0 20px 0;
+  font-family: sans-serif;
+}
+
+/* Officially Certified Badge */
+.officially-certified {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f0f8f8; /* Very light teal background */
+  border: 1px solid #d4e8e8;
+  border-radius: 30px;
+  padding: 10px 25px;
+  color: #008080;
+  font-size: 0.9em;
+  font-weight: 600;
+  font-family: sans-serif;
+}
+
+.certified-text {
+  display: flex;
+  align-items: center;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #24b868; /* Green dot color */
+  margin-right: 12px;
+}
+
+/* Scrolling Logo Section */
+.logo-scroller-outer {
+  width: 100%;
+  overflow: hidden; /* Hide overflow */
+  position: relative;
+  padding: 20px 0;
+}
+
+.logo-scroller-inner {
+ display: flex;
+  width: max-content; /* Inner width to hold all logos */
+  animation: scroll-left 30s linear infinite;
+}
+.logo-scroller-inner:hover {
+  animation-play-state: paused;
+}
+
+.logo-item {
+  width: 150px; /* Constant width for each logo item */
+  margin: 0 20px; /* Spacing between logos */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.logo-item img {
+  height: 70px; /* Constant height for logos */
+  object-fit: contain; /* Fit image without stretching */
+  margin-bottom: 20px;
+}
+
+.logo-item p {
+  color: #1e3a8a; /* Dark navy blue text color */
+  font-family: Georgia, serif; /* Serif font for logo titles to match image */
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+}
+
+/* Seamless Scrolling Keyframes */
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0); /* Initial state */
+  }
+  100% {
+    transform: translateX(-(100% / 2)); /* Move by half the width (one full set of unique logos) to seamlessly loop */
+  }
+}
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0); /* Start at original position */
+  }
+  100% {
+    /* FIX: Changed to -50% to properly shift the duplicated list */
+    transform: translateX(-50%); 
+  }
+}
