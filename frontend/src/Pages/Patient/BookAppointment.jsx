@@ -13,7 +13,7 @@ const BookAppointment = () => {
   // Final Result State
   const [appointmentResult, setAppointmentResult] = useState({ appId: '', serialNo: '' });
 
-  // Mock Doctors Data (Will be replaced by API call based on Date & Dept)
+  // Mock Doctors Data 
   const mockAvailableDoctors = [
     { id: 'DR1001', name: 'Dr. Ramesh Sharma', department: 'Cardiology', availableTime: '09:00 AM - 01:00 PM', fee: '₹500' },
     { id: 'DR1002', name: 'Dr. Anita Desai', department: 'Cardiology', availableTime: '02:00 PM - 06:00 PM', fee: '₹600' },
@@ -21,12 +21,9 @@ const BookAppointment = () => {
     { id: 'DR1004', name: 'Dr. Priya Patel', department: 'General Medicine', availableTime: '08:00 AM - 12:00 PM', fee: '₹300' },
   ];
 
-  // Filter doctors based on selected department (In a real app, date also filters this via Backend)
   const filteredDoctors = mockAvailableDoctors.filter(doc => doc.department === bookingData.department);
-
   const formRef = useRef(null);
 
-  // Animate form container on mount and step change
   useEffect(() => {
     gsap.fromTo(formRef.current, 
       { opacity: 0, x: 50 }, 
@@ -34,7 +31,6 @@ const BookAppointment = () => {
     );
   }, [step]);
 
-  // Handlers
   const handleNextStep = (e) => {
     e.preventDefault();
     setStep(step + 1);
@@ -45,12 +41,11 @@ const BookAppointment = () => {
   };
 
   const handleBookAppointment = () => {
-    // Mock API Call to save appointment
     const generatedAppId = `AP${Math.floor(1000 + Math.random() * 9000)}`;
     const generatedSerial = Math.floor(Math.random() * 10) + 1;
     
     setAppointmentResult({ appId: generatedAppId, serialNo: generatedSerial });
-    setStep(4); // Move to Success Step
+    setStep(4); 
   };
 
   return (
@@ -73,17 +68,73 @@ const BookAppointment = () => {
               <h2>Patient Information</h2>
               <p className="subtitle">Please enter the patient's basic details.</p>
               
-              <div className="form-group"><label>Full Name</label>
-                <input type="text" value={patientData.name} onChange={(e)=>setPatientData({...patientData, name: e.target.value})} required />
+              <div className="form-group">
+                <label>Full Name</label>
+                <input 
+                  type="text" 
+                  placeholder="Enter patient name"
+                  value={patientData.name} 
+                  onChange={(e) => {
+                    // Allows ONLY alphabets and spaces
+                    const val = e.target.value;
+                    if (/^[a-zA-Z\s]*$/.test(val)) {
+                      setPatientData({...patientData, name: val});
+                    }
+                  }} 
+                  required 
+                />
               </div>
-              <div className="form-group"><label>Phone Number</label>
-                <input type="tel" value={patientData.phone} onChange={(e)=>setPatientData({...patientData, phone: e.target.value})} required />
+
+              <div className="form-group">
+                <label>Phone Number</label>
+                <div className="phone-input-wrapper">
+                  <span className="country-code">+91</span>
+                  <input 
+                    type="tel" 
+                    placeholder="Enter 10-digit number"
+                    value={patientData.phone} 
+                    onChange={(e) => {
+                      // Strips all non-digits, limits to 10 characters
+                      const val = e.target.value.replace(/\D/g, '');
+                      if (val.length <= 10) {
+                        setPatientData({...patientData, phone: val});
+                      }
+                    }} 
+                    minLength="10"
+                    maxLength="10"
+                    required 
+                  />
+                </div>
               </div>
-              <div className="form-group"><label>Email Address</label>
-                <input type="email" value={patientData.email} onChange={(e)=>setPatientData({...patientData, email: e.target.value})} required />
+
+              <div className="form-group">
+                <label>Email Address</label>
+                <input 
+                  type="email" 
+                  placeholder="example@domain.com"
+                  value={patientData.email} 
+                  onChange={(e) => setPatientData({...patientData, email: e.target.value})} 
+                  required 
+                />
               </div>
-              <div className="form-group"><label>Aadhar Number</label>
-                <input type="text" value={patientData.aadhar} onChange={(e)=>setPatientData({...patientData, aadhar: e.target.value})} required />
+
+              <div className="form-group">
+                <label>Aadhar Number</label>
+                <input 
+                  type="text" 
+                  placeholder="Enter 12-digit Aadhar number"
+                  value={patientData.aadhar} 
+                  onChange={(e) => {
+                    // Strips all non-digits, limits to 12 characters
+                    const val = e.target.value.replace(/\D/g, '');
+                    if (val.length <= 12) {
+                      setPatientData({...patientData, aadhar: val});
+                    }
+                  }} 
+                  minLength="12"
+                  maxLength="12"
+                  required 
+                />
               </div>
               
               <div className="button-group">

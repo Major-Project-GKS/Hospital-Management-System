@@ -114,7 +114,7 @@ const Footer = () => {
       {/* Bottom Footer Bar */}
       <div className="footer-bottom">
         <p>© 2026 GS Healthcare.</p>
-        <p>Designed by <strong>Hexagon Digital Services</strong></p>
+        <p>Designed by <strong>GS</strong></p>
         <button className="scroll-top-btn" onClick={scrollToTop} aria-label="Scroll to top">
           <ChevronUp size={24} />
         </button>

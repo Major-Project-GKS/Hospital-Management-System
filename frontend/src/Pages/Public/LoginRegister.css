@@ -1,7 +1,7 @@
 /* src/Pages/Public/LoginRegister.css */
 .auth-page {
   width: 100%;
-  min-height: calc(vh - 80px); /* Adjusts for Navbar height */
+  min-height: calc(100vh - 80px); /* Fixed typo here */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,7 +17,7 @@
   max-width: 850px;
   overflow: hidden;
   border: 1px solid #cbd5e1; 
-  opacity: 1; /* Eliminates ghosting effect */
+  opacity: 1; 
 }
 
 /* Top Login/Register Toggle */
@@ -44,7 +44,7 @@
   border-bottom: 3px solid #059669; 
 }
 
-/* Role Tabs (Patient, Doctor, Manager) */
+/* Role Tabs */
 .role-tabs { 
   display: flex; 
   justify-content: center; 
@@ -123,6 +123,40 @@
 .form-group select:focus { 
   border-color: #059669; 
   box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2); 
+}
+
+/* --- ADDED: Country Code Phone Wrapper --- */
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.phone-input-wrapper:focus-within {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+}
+
+.country-code {
+  background-color: #f1f5f9;
+  padding: 0.8rem 1rem;
+  color: #475569;
+  font-weight: 600;
+  border-right: 1px solid #94a3b8;
+}
+
+.phone-input-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0.8rem;
+}
+
+.phone-input-wrapper input:focus {
+  box-shadow: none; 
 }
 
 /* Registration Grid Layout */
