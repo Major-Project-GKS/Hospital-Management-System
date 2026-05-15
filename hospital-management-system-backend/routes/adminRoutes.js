@@ -1,10 +1,8 @@
-// routes/adminRoutes.js
 const express = require('express');
 const router = express.Router();
-const { getDashboardStats } = require('../controllers/adminController');
-const { protect } = require('../middleware/auth'); // Import security middleware
+const { getHospitalStats } = require('../controllers/adminController');
 
-// Protect this route so only logged-in users with a token can access it
-router.get('/stats', protect, getDashboardStats);
+// Manager Dashboard Stat Route
+router.get('/stats', getHospitalStats);
 
 module.exports = router;

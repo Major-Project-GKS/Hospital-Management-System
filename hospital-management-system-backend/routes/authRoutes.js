@@ -5,5 +5,5 @@ const { login } = require('../controllers/authController');
 
 // POST request to /api/auth/login
 router.post('/login', login);
-
+router.post('/reset-password', resetPassword);
 module.exports = router;

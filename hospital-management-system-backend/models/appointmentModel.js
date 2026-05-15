@@ -1,41 +1,36 @@
-// models/appointmentModel.js
 const mongoose = require('mongoose');
-const { getNextSequenceValue } = require('./counterModel');
+const { getNextSequenceValue } = require('./counterModel'); 
 
 const appointmentSchema = new mongoose.Schema({
-  appointment_id: { type: String, unique: true }, // e.g., AP1001
-  patient: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Patient', 
-    required: true 
-  },
-  doctor: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Doctor', 
-    required: true 
-  },
-  department: { type: String, required: true },
-  appointment_date: { type: Date, required: true },
+  appointment_id: { type: String, unique: true },
+  patient_id: { type: String, required: true },
+  doctor_id: { type: String, required: true },
+  patient_name: { type: String, required: true },
+  date: { type: String, required: true },
   time_slot: { type: String, required: true },
-  queue_number: { type: Number },
-  status: {
-    type: String,
-    enum: ['Scheduled', 'Completed', 'Cancelled', 'Absent'],
-    default: 'Scheduled'
+  status: { 
+    type: String, 
+    enum: ['Waiting', 'Completed', 'Absent'], 
+    default: 'Waiting' 
   },
-  prescription_text: { type: String }, // Doctor's notes
-  prescription_file: { type: String }  // Uploaded prescription file
+  serial_number: { type: Number }
 }, { timestamps: true });
 
-// Generate unique APXXXX ID before saving
-appointmentSchema.pre('save', async function (next) {
-  if (!this.isNew) {
-    next();
+// ✅ MODERN FIX: Remove 'next' argument. 
+// When using async/await, Mongoose knows when you are done without calling next()
+appointmentSchema.pre('save', async function () {
+  try {
+    if (this.isNew) {
+      // Fetch the next sequence number (e.g., 5)
+      const seq = await getNextSequenceValue('appointment_id');
+      
+      // Format it as AP0005
+      this.appointment_id = `AP${seq.toString().padStart(4, '0')}`;
+    }
+  } catch (error) {
+    // Re-throw the error so the controller can catch it
+    throw error;
   }
-  const seq_value = await getNextSequenceValue('appointment_id');
-  const padded_value = seq_value.toString().padStart(4, '0');
-  this.appointment_id = `AP${padded_value}`;
-  next();
 });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);

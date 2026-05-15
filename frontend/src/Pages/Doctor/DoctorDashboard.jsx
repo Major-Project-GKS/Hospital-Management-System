@@ -1,149 +1,255 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import './DoctorDashboard.css';
 
 const DoctorDashboard = () => {
-  const [activeTab, setActiveTab] = useState('Queue');
+  const [activeTab, setActiveTab] = useState('Dashboard');
   const [searchQuery, setSearchQuery] = useState('');
+  const [doctorData, setDoctorData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Mock Patient Queue Data
-  const [patientQueue, setPatientQueue] = useState([
-    { id: 'AP1042', serial: 1, name: 'Rahul Verma', time: '09:00 AM', status: 'Waiting' },
-    { id: 'AP1045', serial: 2, name: 'Priya Sharma', time: '09:15 AM', status: 'Waiting' },
-    { id: 'AP1050', serial: 3, name: 'Amit Kumar', time: '09:30 AM', status: 'Waiting' },
-    { id: 'AP1055', serial: 4, name: 'Sneha Gupta', time: '09:45 AM', status: 'Waiting' },
-  ]);
+  // --- Prescription States ---
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+  const [selectedAppt, setSelectedAppt] = useState(null);
+  const [prescriptionData, setPrescriptionData] = useState({
+    diagnosis: '',
+    medicines: [{ name: '', dosage: '', duration: '' }],
+    advice: ''
+  });
 
+  const navigate = useNavigate();
   const tableRef = useRef(null);
+  const modalRef = useRef(null);
+  const UPLOADS_URL = 'http://localhost:5000/uploads/';
 
-  // Animate table rows on load
+  // 1. Fetch Real Data from Backend
   useEffect(() => {
-    if (activeTab === 'Queue' && tableRef.current) {
-      gsap.fromTo(tableRef.current.children, 
-        { opacity: 0, x: -20 },
-        { opacity: 1, x: 0, duration: 0.4, stagger: 0.1, ease: "power2.out" }
-      );
-    }
-  }, [activeTab]);
+    const fetchDocData = async () => {
+      try {
+        const docId = localStorage.getItem('userId');
+        if (!docId) { navigate('/'); return; }
 
-  // Handlers for Doctor Actions
-  const handleStatusChange = (id, newStatus) => {
-    setPatientQueue(prevQueue => 
-      prevQueue.map(patient => 
-        patient.id === id ? { ...patient, status: newStatus } : patient
-      )
-    );
+        const res = await axios.get(`http://localhost:5000/api/doctor/dashboard/${docId}`);
+        setDoctorData(res.data.data);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Fetch Error", err);
+        localStorage.clear();
+        navigate('/');
+      }
+    };
+    fetchDocData();
+  }, [navigate]);
+
+  // 2. Handle Real-Time Status Changes
+  const handleStatusChange = async (apptId, newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/appointment/status/${apptId}`, { 
+        status: newStatus 
+      });
+
+      setDoctorData(prev => ({
+        ...prev,
+        queue: prev.queue.map(appt => 
+          appt.appointment_id === apptId ? { ...appt, status: newStatus } : appt
+        )
+      }));
+      
+      toast.success(`Patient marked as ${newStatus}`);
+    } catch (err) {
+      toast.error("Failed to update status on server");
+    }
   };
 
-  const handleUploadPrescription = (e, patientName) => {
-    const file = e.target.files[0];
-    if (file) {
-      alert(`Prescription uploaded successfully for ${patientName}!`);
-      // Future: API call to upload file to backend/AWS S3
+  // 3. Submit Digital Prescription
+  const submitPrescription = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        appointment_id: selectedAppt.appointment_id,
+        patient_id: selectedAppt.patient_id,
+        doctor_id: doctorData.profile.doctor_id,
+        doctor_name: doctorData.profile.name,
+        ...prescriptionData
+      };
+
+      await axios.post('http://localhost:5000/api/prescription/add', payload);
+      await handleStatusChange(selectedAppt.appointment_id, 'Completed');
+
+      setShowPrescriptionModal(false);
+      setPrescriptionData({ diagnosis: '', medicines: [{ name: '', dosage: '', duration: '' }], advice: '' });
+      toast.success("Prescription Sent Successfully!");
+    } catch (err) {
+      toast.error("Failed to save prescription");
     }
   };
 
-  // Filter patients based on search
-  const filteredQueue = patientQueue.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    p.id.toLowerCase().includes(searchQuery.toLowerCase())
+  // GSAP for Modal
+  useEffect(() => {
+    if (showPrescriptionModal) {
+      gsap.fromTo(modalRef.current, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.7)" });
+    }
+  }, [showPrescriptionModal]);
+
+  if (isLoading) return <div className="loading">Connecting to Doctor Portal...</div>;
+
+  const filteredQueue = doctorData.queue.filter(p => 
+    p.patient_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    p.appointment_id.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="doctor-dashboard">
-      
-      {/* Sidebar Navigation */}
       <aside className="dashboard-sidebar">
         <div className="doc-profile">
-          <div className="avatar">👨‍⚕️</div>
-          <h3>Dr. Ramesh</h3>
-          <p>Cardiology | DR1001</p>
+          <div className="avatar">
+            {doctorData.profile.photo ? (
+              <img src={`${UPLOADS_URL}${doctorData.profile.photo}`} alt="Doc" style={{width:'80px', height:'80px', borderRadius:'50%', objectFit:'cover'}} />
+            ) : "👨‍⚕️"}
+          </div>
+          <h3>Dr. {doctorData.profile.name}</h3>
+          <p>{doctorData.profile.department} | {doctorData.profile.doctor_id}</p>
         </div>
         <ul className="sidebar-menu">
           <li className={activeTab === 'Dashboard' ? 'active' : ''} onClick={() => setActiveTab('Dashboard')}>Dashboard</li>
           <li className={activeTab === 'Queue' ? 'active' : ''} onClick={() => setActiveTab('Queue')}>Patient Queue</li>
-          <li className={activeTab === 'Schedule' ? 'active' : ''} onClick={() => setActiveTab('Schedule')}>My Schedule</li>
-          <li className="logout-btn" onClick={() => window.location.href = '/'}>Logout</li>
+          <li className={activeTab === 'Profile' ? 'active' : ''} onClick={() => setActiveTab('Profile')}>My Profile</li>
+          <li className="logout-btn" onClick={() => { localStorage.clear(); window.location.href = '/'; }}>Logout</li>
         </ul>
       </aside>
 
-      {/* Main Content Area */}
       <main className="dashboard-content">
-        
+        {activeTab === 'Dashboard' && (
+          <div className="welcome-box">
+             <h2>Welcome back, Dr. {doctorData.profile.name.split(' ')[0]}! 👋</h2>
+             <p>You have {doctorData.queue.filter(q => q.status === 'Waiting').length} total patients waiting in your queue.</p>
+          </div>
+        )}
+
         {activeTab === 'Queue' && (
           <div className="queue-section">
-            <div className="section-header">
-              <h2>Today's Patient Queue</h2>
-              <input 
-                type="text" 
-                placeholder="Search patient name or ID..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </div>
+             <div className="section-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
+                <h2>Patient Appointment Queue</h2>
+                <input 
+                  type="text" 
+                  placeholder="Search Name or ID..." 
+                  className="search-input"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+             </div>
 
-            <div className="table-container">
-              <table className="queue-table">
+             <table className="queue-table">
                 <thead>
                   <tr>
-                    <th>Serial No.</th>
+                    <th>Serial</th>
                     <th>Appt ID</th>
                     <th>Patient Name</th>
-                    <th>Time</th>
+                    <th>Schedule</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody ref={tableRef}>
                   {filteredQueue.length > 0 ? (
-                    filteredQueue.map((patient) => (
-                      <tr key={patient.id} className={patient.status.toLowerCase()}>
-                        <td><strong>#{patient.serial}</strong></td>
-                        <td>{patient.id}</td>
-                        <td>{patient.name}</td>
-                        <td>{patient.time}</td>
+                    filteredQueue.map((p) => (
+                      <tr key={p.appointment_id}>
+                        <td><strong>#{p.serial_number}</strong></td>
+                        <td>{p.appointment_id}</td>
+                        <td>{p.patient_name}</td>
+                        <td>{p.date} | {p.time_slot}</td>
                         <td>
-                          <span className={`status-badge ${patient.status.toLowerCase()}`}>
-                            {patient.status}
+                          <span className={`status-badge ${p.status.toLowerCase()}`}>
+                            {p.status}
                           </span>
                         </td>
-                        <td className="action-buttons">
-                          {patient.status === 'Waiting' && (
-                            <>
-                              <button className="btn-complete" onClick={() => handleStatusChange(patient.id, 'Completed')}>✅ Complete</button>
-                              <button className="btn-absent" onClick={() => handleStatusChange(patient.id, 'Absent')}>❌ Absent</button>
-                            </>
-                          )}
-                          {patient.status === 'Completed' && (
-                            <div className="upload-wrapper">
-                              <label htmlFor={`upload-${patient.id}`} className="btn-upload">📄 Upload Prescription</label>
-                              <input 
-                                type="file" 
-                                id={`upload-${patient.id}`} 
-                                style={{ display: 'none' }} 
-                                onChange={(e) => handleUploadPrescription(e, patient.name)}
-                              />
+                        <td>
+                          {p.status === 'Waiting' && (
+                            <div className="action-btns">
+                              <button className="btn-prescribe" onClick={() => {
+                                setSelectedAppt(p);
+                                setShowPrescriptionModal(true);
+                              }}>💊 Prescribe</button>
+                              <button className="btn-absent" onClick={() => handleStatusChange(p.appointment_id, 'Absent')}>❌ Absent</button>
                             </div>
                           )}
+                          {p.status !== 'Waiting' && <span style={{color: p.status === 'Completed' ? '#059669' : '#e11d48', fontSize:'0.9rem', fontWeight: 'bold'}}>{p.status}</span>}
                         </td>
                       </tr>
                     ))
                   ) : (
-                    <tr>
-                      <td colSpan="6" className="no-data">No patients found in the queue.</td>
-                    </tr>
+                    <tr><td colSpan="6" style={{textAlign:'center', padding:'20px'}}>No matching patients found.</td></tr>
                   )}
                 </tbody>
-              </table>
-            </div>
+             </table>
           </div>
         )}
 
-        {/* Placeholder for other tabs */}
-        {activeTab === 'Dashboard' && <h2>Welcome to your Dashboard. You have {patientQueue.filter(p => p.status === 'Waiting').length} patients waiting today.</h2>}
-        {activeTab === 'Schedule' && <h2>Your Schedule View (Coming Soon)</h2>}
+        {/* Prescription Modal Overlay */}
+        {showPrescriptionModal && (
+          <div className="modal-overlay">
+            <div className="prescription-modal" ref={modalRef}>
+              <button className="close-modal" onClick={() => setShowPrescriptionModal(false)}>&times;</button>
+              <h2>Digital Prescription</h2>
+              <p className="modal-subtitle">Patient: <strong>{selectedAppt.patient_name}</strong> | ID: {selectedAppt.patient_id}</p>
+              
+              <form onSubmit={submitPrescription}>
+                <div className="form-group">
+                  <label>Diagnosis / Clinical Findings</label>
+                  <textarea 
+                    required 
+                    placeholder="E.g. Mild viral fever, suggest rest..."
+                    onChange={(e) => setPrescriptionData({...prescriptionData, diagnosis: e.target.value})}
+                  ></textarea>
+                </div>
 
+                <div className="medicine-list">
+                  <label>Medicines</label>
+                  {prescriptionData.medicines.map((med, index) => (
+                    <div key={index} className="med-row">
+                      <input 
+                        placeholder="Medicine Name" 
+                        required 
+                        onChange={(e) => {
+                          const newMeds = [...prescriptionData.medicines];
+                          newMeds[index].name = e.target.value;
+                          setPrescriptionData({...prescriptionData, medicines: newMeds});
+                        }}
+                      />
+                      <input 
+                        placeholder="Dosage (1-0-1)" 
+                        required 
+                        onChange={(e) => {
+                          const newMeds = [...prescriptionData.medicines];
+                          newMeds[index].dosage = e.target.value;
+                          setPrescriptionData({...prescriptionData, medicines: newMeds});
+                        }}
+                      />
+                    </div>
+                  ))}
+                  <button type="button" className="btn-add-med" onClick={() => {
+                    setPrescriptionData({
+                      ...prescriptionData, 
+                      medicines: [...prescriptionData.medicines, { name: '', dosage: '', duration: '' }]
+                    })
+                  }}>+ Add Medicine</button>
+                </div>
+
+                <div className="form-group">
+                  <label>Additional Advice</label>
+                  <input 
+                    placeholder="Drink plenty of water, avoid cold items..."
+                    onChange={(e) => setPrescriptionData({...prescriptionData, advice: e.target.value})}
+                  />
+                </div>
+
+                <button type="submit" className="btn-submit-pres">Send Digital Prescription</button>
+              </form>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

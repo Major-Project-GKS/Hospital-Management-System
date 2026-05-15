@@ -1,51 +1,145 @@
-/* src/Pages/Manager/ManagerDashboard.css */
-.manager-dashboard {
-  display: flex;
-  min-height: calc(100vh - 70px);
-  background-color: var(--bg-light);
+/* Container Fixes */
+.manager-dashboard { 
+    display: flex; 
+    height: 100vh; 
+    width: 100%;
+    background: #f0f4f9; /* Changed from bright blue to soft professional grey */
+    overflow: hidden;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+/* Sidebar Styling */
+.manager-sidebar { 
+    width: 260px; 
+    background: #0f172a; 
+    color: white; 
+    padding: 25px; 
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
 }
 
-.stat-card {
-  background-color: var(--white);
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  border-left: 5px solid var(--primary-color);
+.admin-brand {
+    text-align: center;
+    margin-bottom: 40px;
 }
 
-.stat-icon {
-  font-size: 3rem;
-  background-color: var(--secondary-color);
-  width: 70px;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
+.brand-icon {
+    font-size: 40px;
+    margin-left: 80px;
+    margin-bottom: 10px;
+    
 }
 
-.stat-info h3 { font-size: 1rem; color: var(--text-light); margin-bottom: 0.2rem; }
-.stat-info h2 { font-size: 2rem; color: var(--text-dark); }
-
-.action-panel {
-  background-color: var(--white);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    flex-grow: 1;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+.sidebar-menu li {
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 500;
 }
+
+.sidebar-menu li:hover, .sidebar-menu li.active {
+    background: #334155;
+    color: #38bdf8;
+}
+
+.logout-btn {
+    color: #f87171 !important;
+    margin-top: auto;
+}
+
+/* Main Content Area */
+.manager-main { 
+    flex: 1; 
+    padding: 30px; 
+    overflow-y: auto; 
+}
+
+.content-header {
+    margin-bottom: 30px;
+}
+
+.content-header h1 {
+    color: #1e293b;
+    font-size: 1.8rem;
+}
+
+/* Stats Grid & Cards */
+.stats-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 25px; 
+    margin-bottom: 40px;
+}
+
+.stat-card { 
+    padding: 25px; 
+    border-radius: 16px; 
+    color: white; 
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card .icon {
+    font-size: 35px;
+    background: rgba(255,255,255,0.2);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.stat-card.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.stat-card.green { background: linear-gradient(135deg, #10b981, #047857); }
+.stat-card.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+
+.stat-info h3 { font-size: 2.2rem; margin: 0; }
+.stat-info p { margin: 0; opacity: 0.9; font-weight: 500; }
+
+/* Table Styling */
+/* .recent-table-wrapper {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+} */
+
+.admin-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 15px;
+}
+
+.admin-table th { 
+    background: #f8fafc; 
+    color: #475569; 
+    text-align: left;
+    padding: 15px;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.admin-table td { 
+    padding: 15px; 
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9; 
+}
+
+/* Status Badges */
+.status-pill { 
+    padding: 6px 14px; 
+    border-radius: 20px; 
+    font-size: 0.75rem; 
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-pill.waiting { background: #fef3c7; color: #92400e; }
+.status-pill.completed { background: #d1fae5; color: #065f46; }

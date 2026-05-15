@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const path = require('path'); // Added for directory path handling
+const path = require('path'); 
 const connectDB = require('./config/db');
 
 // Connect to Database
@@ -14,9 +14,9 @@ const app = express();
 // ==========================================
 app.use(cors());
 app.use(express.json()); 
-app.use(express.urlencoded({ extended: true })); // Added to help with form-data parsing
+app.use(express.urlencoded({ extended: true })); 
 
-// ✅ FIXED: Better way to serve the static uploads folder
+// Serving static uploads (Photos, Aadhar PDFs, Proofs)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ==========================================
@@ -34,13 +34,19 @@ app.use('/api/auth', require('./routes/authRoutes'));
 // 2. Patient Routes (Registration, Dashboard, etc.)
 app.use('/api/patient', require('./routes/patientRoutes'));
 
-// 3. Doctor Routes (Registration, schedule, etc.)
+// 3. Doctor Routes (Registration, Profile Data, etc.)
 app.use('/api/doctor', require('./routes/doctorRoutes'));
 
 // 4. Manager Routes (Registration, etc.)
 app.use('/api/manager', require('./routes/managerRoutes'));
 
-// 5. Admin/Manager Dashboard Routes (Stats, etc.)
+// 5. Appointment Routes (Booking & Status Updates)
+app.use('/api/appointment', require('./routes/appointmentRoutes'));
+
+// 6. Digital Prescription Routes ✅ NEWLY ADDED
+app.use('/api/prescription', require('./routes/prescriptionRoutes'));
+
+// 7. Admin/Manager Dashboard Routes (Stats, etc.)
 app.use('/api/admin', require('./routes/adminRoutes')); 
 
 // ==========================================
@@ -56,4 +62,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server started on port ${PORT}`);
   console.log(`📂 Uploads accessible at http://localhost:${PORT}/uploads`);
+  console.log(`📅 Appointment system active at /api/appointment`);
+  console.log(`💊 Prescription system active at /api/prescription`);
 });

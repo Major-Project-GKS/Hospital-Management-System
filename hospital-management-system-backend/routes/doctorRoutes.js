@@ -1,13 +1,11 @@
-// routes/doctorRoutes.js
 const express = require('express');
 const router = express.Router();
-const { registerDoctor, getDoctors } = require('../controllers/doctorController');
+const { registerDoctor, getDoctors, getDoctorDashboard } = require('../controllers/doctorController');
 const upload = require('../middleware/upload');
 
-// Route to get list of doctors (for the booking page)
 router.get('/', getDoctors);
+router.get('/dashboard/:id', getDoctorDashboard);
 
-// Route to register a doctor (handles photo and certified proof uploads)
 router.post(
   '/register',
   upload.fields([

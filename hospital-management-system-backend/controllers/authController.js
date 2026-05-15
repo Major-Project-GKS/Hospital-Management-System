@@ -1,17 +1,10 @@
-// controllers/authController.js
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const Patient = require('../models/patientModel');
 const Doctor = require('../models/doctorModel');
 const Manager = require('../models/managerModel');
 
-// Helper function to generate JWT token
-const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-};
-
-// @desc    Unified Login for Patient, Doctor, and Manager
-// @route   POST /api/auth/login
+// Standard Login Logic
 const login = async (req, res) => {
   const { login_id, password } = req.body;
 
@@ -22,43 +15,62 @@ const login = async (req, res) => {
   try {
     let user = null;
     let role = '';
-
-    // Smart Routing: Check prefix to determine role
     const prefix = login_id.substring(0, 2).toUpperCase();
 
-    if (prefix === 'PT') {
-      user = await Patient.findOne({ application_id: login_id }).select('+password');
-      role = 'Patient';
+    if (prefix === 'HM') {
+      user = await Manager.findOne({ manager_id: login_id }).select('+password');
+      role = 'Manager';
     } else if (prefix === 'DR') {
       user = await Doctor.findOne({ doctor_id: login_id }).select('+password');
       role = 'Doctor';
-    } else if (prefix === 'HM') {
-      user = await Manager.findOne({ manager_id: login_id }).select('+password');
-      role = 'Manager';
+    } else if (prefix === 'PT') {
+      user = await Patient.findOne({ application_id: login_id }).select('+password');
+      role = 'Patient';
     } else {
       return res.status(400).json({ success: false, message: 'Invalid ID format' });
     }
 
-    // Check if user exists and password matches
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // Send response with token
+    const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
     res.status(200).json({
       success: true,
-      token: generateToken(user._id, role),
-      data: {
-        id: user._id,
-        login_id: login_id,
-        name: user.name,
-        role: role
-      }
+      token,
+      user: { id: login_id, name: user.name, role: role }
     });
-
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-module.exports = { login };
+// NEW: Reset Password Logic
+const resetPassword = async (req, res) => {
+  const { email, aadhar_number, newPassword } = req.body;
+
+  try {
+    let user = null;
+    const models = [Patient, Doctor, Manager];
+
+    for (let M of models) {
+      user = await M.findOne({ email, aadhar_number });
+      if (user) break;
+    }
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Verification failed. Incorrect Email or Aadhar." });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Password updated successfully!" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = { login, resetPassword };

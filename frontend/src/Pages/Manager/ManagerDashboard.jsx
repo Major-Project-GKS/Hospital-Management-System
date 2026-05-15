@@ -1,76 +1,163 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './ManagerDashboard.css';
-import { useAuth } from '../../context/AuthContext';
 
 const ManagerDashboard = () => {
-  const { user, logout } = useAuth(); // Using your new context!
   const [activeTab, setActiveTab] = useState('Overview');
+  const [stats, setStats] = useState(null);
+  const [doctors, setDoctors] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const navigate = useNavigate();
   const contentRef = useRef(null);
 
-  // Mock stats
-  const stats = { totalDoctors: 24, totalPatients: 142, activeAppointments: 38 };
-
   useEffect(() => {
-    gsap.fromTo(contentRef.current, 
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
-    );
-  }, [activeTab]);
+    const fetchManagerData = async () => {
+      try {
+        const adminId = localStorage.getItem('userId');
+        if (!adminId || !adminId.startsWith('HM')) {
+          navigate('/');
+          return;
+        }
+
+        // Fetch Stats and Full Doctor List
+        const [statsRes, docsRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/admin/stats'),
+          axios.get('http://localhost:5000/api/doctor')
+        ]);
+
+        setStats(statsRes.data.data);
+        setDoctors(docsRes.data.data);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Failed to load manager data:", err);
+        localStorage.clear();
+        navigate('/');
+      }
+    };
+    fetchManagerData();
+  }, [navigate]);
+
+  // GSAP Animation for cards
+  useEffect(() => {
+    if (!isLoading && contentRef.current) {
+      gsap.from(".stat-card", { 
+        opacity: 0, 
+        y: 20, 
+        stagger: 0.15, 
+        duration: 0.6, 
+        ease: "power2.out" 
+      });
+    }
+  }, [isLoading, activeTab]);
+
+  if (isLoading) return <div className="loading-screen"><h2>Accessing Secure Admin Panel... 🛡️</h2></div>;
 
   return (
     <div className="manager-dashboard">
-      <aside className="dashboard-sidebar">
-        <div className="user-profile">
-          <div className="avatar">🏢</div>
-          <h3>{user?.name || 'Hospital Admin'}</h3>
-          <p>Manager ID: {user?.id || 'HM1001'}</p>
+      {/* Sidebar */}
+      <aside className="manager-sidebar">
+        <div className="admin-brand">
+          <div className="brand-icon">🏥</div>
+          <h3>HMS Admin</h3>
+          <p>ID: {localStorage.getItem('userId')}</p>
         </div>
         <ul className="sidebar-menu">
-          <li className={activeTab === 'Overview' ? 'active' : ''} onClick={() => setActiveTab('Overview')}>Hospital Overview</li>
-          <li><Link to="/manager/schedule" className="sidebar-link">Manage Doctor Schedules</Link></li>
-          <li className="logout-btn" onClick={logout}>Logout</li>
+          <li className={activeTab === 'Overview' ? 'active' : ''} onClick={() => setActiveTab('Overview')}>Hospital Stats</li>
+          <li className={activeTab === 'Doctors' ? 'active' : ''} onClick={() => setActiveTab('Doctors')}>Manage Doctors</li>
+          <li className="logout-btn" onClick={() => { localStorage.clear(); window.location.href = '/'; }}>Logout</li>
         </ul>
       </aside>
 
-      <main className="dashboard-content" ref={contentRef}>
+      {/* Main Content */}
+      <main className="manager-main" ref={contentRef}>
         {activeTab === 'Overview' && (
           <div className="overview-section">
-            <h2>Hospital Management Overview</h2>
-            <p className="subtitle">Monitor daily operations and staff availability.</p>
+            <header className="content-header">
+              <h1>Welcome to the Command Center</h1>
+              <p>Real-time hospital operations overview.</p>
+            </header>
 
             <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-icon">👨‍⚕️</div>
+              <div className="stat-card blue">
+                <span className="icon">👨‍⚕️</span>
                 <div className="stat-info">
-                  <h3>Total Doctors</h3>
-                  <h2>{stats.totalDoctors}</h2>
+                  <h3>{stats.totalDoctors}</h3>
+                  <p>Total Doctors</p>
                 </div>
               </div>
-              <div className="stat-card">
-                <div className="stat-icon">🤒</div>
+              <div className="stat-card green">
+                <span className="icon">👤</span>
                 <div className="stat-info">
-                  <h3>Registered Patients</h3>
-                  <h2>{stats.totalPatients}</h2>
+                  <h3>{stats.totalPatients}</h3>
+                  <p>Registered Patients</p>
                 </div>
               </div>
-              <div className="stat-card">
-                <div className="stat-icon">📅</div>
+              <div className="stat-card purple">
+                <span className="icon">📅</span>
                 <div className="stat-info">
-                  <h3>Today's Appointments</h3>
-                  <h2>{stats.activeAppointments}</h2>
+                  <h3>{stats.totalAppointments}</h3>
+                  <p>Total Appointments</p>
                 </div>
               </div>
             </div>
 
-            <div className="action-panel">
-              <h3>Quick Actions</h3>
-              <div className="action-buttons">
-                <Link to="/manager/schedule" className="btn-primary">Assign Doctor Schedules</Link>
-                <Link to="/login" className="btn-secondary">Register New Doctor</Link>
-              </div>
+            <div className="recent-table-wrapper">
+              <h3>Recent Appointments</h3>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Patient</th>
+                    <th>Doctor ID</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.recentAppointments.map(app => (
+                    <tr key={app._id}>
+                      <td>{app.patient_name}</td>
+                      <td>{app.doctor_id}</td>
+                      <td>{app.date}</td>
+                      <td><span className={`status-pill ${app.status.toLowerCase()}`}>{app.status}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'Doctors' && (
+          <div className="doctors-list">
+            <header className="content-header">
+              <h1>Medical Staff Directory</h1>
+              <p>View and manage all registered doctors.</p>
+            </header>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Doctor Name</th>
+                  <th>Specialization</th>
+                  <th>Experience</th>
+                  <th>Phone</th>
+                </tr>
+              </thead>
+              <tbody>
+                {doctors.map(doc => (
+                  <tr key={doc._id}>
+                    <td><strong>{doc.doctor_id}</strong></td>
+                    <td>{doc.name}</td>
+                    <td>{doc.department}</td>
+                    <td>{doc.experience} Years</td>
+                    <td>{doc.phone}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </main>
