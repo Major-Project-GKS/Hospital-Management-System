@@ -104,12 +104,12 @@
 .stat-info p { margin: 0; opacity: 0.9; font-weight: 500; }
 
 /* Table Styling */
-/* .recent-table-wrapper {
+.recent-table-wrapper {
     background: white;
     padding: 25px;
     border-radius: 16px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-} */
+}
 
 .admin-table { 
     width: 100%; 
@@ -143,3 +143,125 @@
 
 .status-pill.waiting { background: #fef3c7; color: #92400e; }
 .status-pill.completed { background: #d1fae5; color: #065f46; }
+/* PatientDashboard.css / DoctorDashboard.css / ManagerDashboard.css */
+
+.patient-loading-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.sidebar-profile-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.profile-details-card {
+    margin-top: 20px;
+    padding: 30px;
+}
+
+.profile-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.detail-label {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.section-divider {
+    margin: 30px 0;
+    border: none;
+    border-top: 1px solid #eee;
+}
+
+.docs-label {
+    margin-bottom: 15px;
+}
+
+.document-btn {
+    display: inline-block;
+    width: auto;
+}
+
+.empty-state-container {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.quick-book-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.prescription-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.diagnosis-title {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+}
+
+.doctor-meta {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.medicine-summary-box {
+    margin-top: 15px;
+}
+
+.medicines-heading {
+    margin: 0 0 5px 0;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.medicines-list {
+    padding-left: 20px;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.advice-summary-box {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    font-size: 0.85rem;
+}
+
+.static-status-text {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.static-status-text.completed {
+    color: #059669;
+}
+
+.static-status-text.absent {
+    color: #e11d48;
+}
+
+.empty-table-text {
+    text-align: center;
+    padding: 20px;
+}

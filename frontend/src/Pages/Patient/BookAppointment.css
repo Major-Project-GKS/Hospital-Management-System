@@ -1,137 +1,447 @@
-.booking-page {
-  min-height: calc(100vh - 70px);
-  background-color: #f8fafc;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2rem 1rem;
+/* Container Restraints for a Strict Single Screen Frame Layout */
+.booking-single-frame-wrapper {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 15px 30px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+    min-height: calc(100vh - 85px);
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
 }
 
-.booking-container {
-  width: 100%;
-  max-width: 650px;
+/* Split-Column Framework Rows grid setup */
+.booking-workspace-split {
+    display: grid;
+    grid-template-columns: 1fr 340px; /* Split ratio allocating wide area left and fixed context card on right */
+    gap: 25px;
+    width: 100%;
+    align-items: stretch;
 }
 
-.progress-bar {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-  background-color: #ffffff;
-  padding: 1rem 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+@media (max-width: 900px) {
+    .booking-workspace-split {
+        grid-template-columns: 1fr;
+    }
+    .booking-summary-sidebar-card {
+        display: none; /* Hide summary sidebar layout safely on small mobile nodes */
+    }
 }
 
-.step {
-  font-weight: 600;
-  color: #94a3b8;
-  font-size: 0.9rem;
+/* Left Panel Interactive Active Workspace Card Styles */
+.booking-interactive-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.01);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 440px; /* Compact height bounds layout within a single viewport */
 }
 
-.step.active {
-  color: #059669; /* Match your primary green */
+/* Compact Step Status Header Strip */
+.mini-step-indicator-bar {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
 }
 
-.booking-card {
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+.mini-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
-.form-group {
-  margin-bottom: 1.2rem;
-  display: flex;
-  flex-direction: column;
+.mini-step .dot-index {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: #f1f5f9;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
 }
 
-.form-group label {
-  font-weight: 600;
-  margin-bottom: 0.4rem;
-  color: #1e293b;
+/* Active and Done color highlights */
+.mini-step.active {
+    color: #059669;
+}
+.mini-step.active .dot-index {
+    background-color: #059669;
+    color: #ffffff;
+}
+.mini-step.done .dot-index {
+    background-color: #d1fae5;
+    color: #059669;
 }
 
-.form-group input, .form-group select {
-  padding: 0.8rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 1rem;
+@media (max-width: 600px) {
+    .mini-step .dot-label { display: none; } /* Drop wording labels safely on mobile screens */
 }
 
-.phone-input-wrapper {
-  display: flex;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  overflow: hidden;
+/* Compact Node Form Row Grid alignment controls */
+.compact-node-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
 }
 
-.country-code {
-  background: #f1f5f9;
-  padding: 0.8rem;
-  font-weight: bold;
-  border-right: 1px solid #cbd5e1;
+.node-title-block h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 4px 0;
 }
 
-.phone-input-wrapper input { border: none; flex: 1; }
-
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1.5rem;
+.node-title-block p.subtitle, .node-title-block p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #64748b;
 }
 
-.btn-next, .btn-book, .btn-home {
-  background: #059669;
-  color: white;
-  padding: 0.8rem 1.5rem;
-  border-radius: 6px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
+/* Horizontal Field Rows Layout to optimize height space */
+.form-grid-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
-.btn-prev {
-  background: #e2e8f0;
-  padding: 0.8rem 1.5rem;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
+@media (max-width: 550px) {
+    .form-grid-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 }
 
-.doctor-selection-list {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: 1rem;
-  padding-right: 5px;
+.form-group-node {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-.doctor-select-card {
-  border: 1px solid #e2e8f0;
-  padding: 1rem;
-  margin-bottom: 0.8rem;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: 0.2s;
+.form-group-node label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #334155;
 }
 
-.doctor-select-card:hover { border-color: #059669; }
-.doctor-select-card.selected {
-  background: #ecfdf5;
-  border-color: #059669;
+.form-group-node input, .form-group-node select {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    background-color: #ffffff;
+    color: #1e293b;
+    transition: border-color 0.15s ease;
 }
 
-.doc-fee { font-weight: bold; color: #059669; }
-
-.ticket {
-  background: #f8fafc;
-  border: 2px dashed #cbd5e1;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin: 1.5rem 0;
-  text-align: left;
+.form-group-node input:focus, .form-group-node select:focus {
+    border-color: #059669;
 }
 
-.ticket-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
-.serial-num { font-size: 1.5rem; color: #dc2626; }
+/* Phone Field Container alignment resets */
+.phone-input-wrapper-node {
+    display: flex;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.phone-input-wrapper-node:focus-within {
+    border-color: #059669;
+}
+
+.country-code-node {
+    background-color: #f1f5f9;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #475569;
+    border-right: 1px solid #cbd5e1;
+}
+
+.phone-input-wrapper-node input {
+    border: none !important;
+    width: 100%;
+}
+
+/* Fixed Scroll Box frame configuration for Doctor List */
+.doctor-scroll-frame {
+    max-height: 200px; /* Restricts overflow expansion to prevent frame break stretching */
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #f8fafc;
+}
+
+.doctor-selection-row-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background-color 0.15s;
+}
+
+.doctor-selection-row-card:last-child {
+    margin-bottom: 0;
+}
+
+.doctor-selection-row-card:hover {
+    border-color: #059669;
+}
+
+.doctor-selection-row-card.selected {
+    background: #f0fdf4;
+    border-color: #059669;
+}
+
+.doc-meta-left h4 {
+    margin: 0 0 2px 0;
+    font-size: 1rem;
+    color: #0f172a;
+}
+
+.doc-meta-left p {
+    margin: 0 0 2px 0;
+    font-size: 0.82rem;
+    color: #475569;
+}
+
+.doc-meta-left <small> {
+    color: #94a3b8;
+    font-size: 0.78rem;
+}
+
+.fee-token {
+    font-weight: 700;
+    color: #059669;
+    font-size: 0.95rem;
+}
+
+/* Action Trigger Button group footer panel rules */
+.action-footer-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.btn-action-primary {
+    background-color: #059669;
+    color: #ffffff;
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.btn-action-primary:hover {
+    background-color: #047857;
+}
+
+.btn-action-primary:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.btn-action-back {
+    background-color: #e2e8f0;
+    color: #475569;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+/* Right Side Panel Card Blueprint rules */
+.booking-summary-sidebar-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.booking-summary-sidebar-card h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-vertical-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex-grow: 1;
+}
+
+.summary-node-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.summary-node-icon {
+    font-size: 1.1rem;
+    background-color: #f1f5f9;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.summary-node-text label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.summary-node-text p {
+    margin: 2px 0 0 0;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.placeholder-text {
+    color: #cbd5e1;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.highlighted-doc-node {
+    background-color: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+}
+
+.bold-doc-name {
+    color: #059669 !important;
+}
+
+.sidebar-cost-total-panel {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 14px;
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.88rem;
+}
+
+.sidebar-cost-total-panel strong {
+    font-size: 1.15rem;
+    color: #059669;
+    font-weight: 800;
+}
+
+/* Success Ticket Panel Node configuration rules */
+.success-screen-node {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.success-badge-vibe {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+}
+
+.success-screen-node h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.3rem;
+    color: #0f172a;
+}
+
+.success-screen-node p {
+    margin: 0 0 15px 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.mini-success-ticket-receipt {
+    background-color: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 14px;
+    max-width: 440px;
+    margin: 0 auto 20px auto;
+    text-align: left;
+}
+
+.receipt-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 0.88rem;
+}
+
+.receipt-row mark {
+    background: #e0f2fe;
+    color: #0369a1;
+    font-weight: 700;
+    padding: 0 6px;
+    border-radius: 4px;
+}
+
+.big-serial {
+    border-top: 1px solid #cbd5e1;
+    padding-top: 8px;
+    margin-top: 8px;
+    align-items: center;
+}
+
+.queue-glow-num {
+    font-size: 1.4rem;
+    color: #e11d48;
+}
+
+.block-btn {
+    width: 100%;
+}
+
+/* Custom Mini Scrollbar rules */
+.doctor-scroll-frame::-webkit-scrollbar {
+    width: 4px;
+}
+.doctor-scroll-frame::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 10px;
+}

@@ -188,3 +188,256 @@
 
 .med-row { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 10px; }
 .btn-add-med { background: #f1f5f9; border: 1px dashed #cbd5e1; padding: 5px; width: 100%; cursor: pointer; }
+/* PatientDashboard.css / DoctorDashboard.css / ManagerDashboard.css */
+
+.patient-loading-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.sidebar-profile-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.profile-details-card {
+    margin-top: 20px;
+    padding: 30px;
+}
+
+.profile-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.detail-label {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.section-divider {
+    margin: 30px 0;
+    border: none;
+    border-top: 1px solid #eee;
+}
+
+.docs-label {
+    margin-bottom: 15px;
+}
+
+.document-btn {
+    display: inline-block;
+    width: auto;
+}
+
+.empty-state-container {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.quick-book-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.prescription-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.diagnosis-title {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+}
+
+.doctor-meta {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.medicine-summary-box {
+    margin-top: 15px;
+}
+
+.medicines-heading {
+    margin: 0 0 5px 0;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.medicines-list {
+    padding-left: 20px;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.advice-summary-box {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    font-size: 0.85rem;
+}
+
+.static-status-text {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.static-status-text.completed {
+    color: #059669;
+}
+
+.static-status-text.absent {
+    color: #e11d48;
+}
+
+.empty-table-text {
+    text-align: center;
+    padding: 20px;
+}
+/* Doctor Overview Section Layout Grid */
+.doctor-overview-section {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Metric Counter Cards Grid */
+.doctor-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+}
+
+/* Base Stat Card Typography & Layout Geometry */
+.doc-stat-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f1f5f9;
+}
+
+.clickable-tab-card {
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.clickable-tab-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
+}
+
+/* Visual Glow Signature Accents */
+.doc-stat-card.amber-glow { border-left: 5px solid #f59e0b; }
+.doc-stat-card.emerald-glow { border-left: 5px solid #10b981; }
+.doc-stat-card.sapphire-glow { border-left: 5px solid #3b82f6; }
+
+/* Icon Wrapper Geometry Inside Stat Cards */
+.card-icon-wrapper {
+    font-size: 2rem;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-metric-info h3 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.card-metric-info p {
+    margin: 4px 0 0 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Shift Activity Log Summary Section */
+.queue-summary-preview-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 25px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.preview-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.preview-card-header h3 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.btn-view-all {
+    background: none;
+    border: none;
+    color: #10b981;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.btn-view-all:hover {
+    color: #059669;
+    text-decoration: underline;
+}
+
+.preview-metrics-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.preview-metrics-strip p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #475569;
+}
+
+.preview-metrics-strip strong {
+    color: #0f172a;
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,16 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { User, Key, Building2 } from 'lucide-react'; // Removed Activity since we are using the custom logo
+import { User, Key, Building2 } from 'lucide-react'; 
 import { gsap } from 'gsap';
 import './Navbar.css';
 
-// Import your custom logo from the assets folder
+// Import custom logo from assets folder
 import logoImg from '../assets/logo.png'; 
 
 const Navbar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-  const isActive = (path) => currentPath === path;
+  
+  // Clean fail-safe comparison to avoid casing issues
+  const isActive = (path) => currentPath.toLowerCase() === path.toLowerCase();
 
   // --- GSAP Animation Refs ---
   const navRef = useRef(null);
@@ -18,7 +20,7 @@ const Navbar = () => {
   const menuItemsRef = useRef([]);
   const actionBtnsRef = useRef([]);
 
-  // Helper to push items to the ref arrays
+  // Helper to push items to the ref arrays safely
   const addToMenuRefs = (el) => {
     if (el && !menuItemsRef.current.includes(el)) {
       menuItemsRef.current.push(el);
@@ -32,7 +34,6 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    // GSAP Timeline for a coordinated sequence
     const tl = gsap.timeline();
 
     // 1. Main Navbar drops down
@@ -44,7 +45,7 @@ const Navbar = () => {
     .fromTo(brandRef.current,
       { x: -30, opacity: 0 },
       { x: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
-      "-=0.4" // Overlap with previous animation by 0.4s
+      "-=0.4"
     )
     // 3. Center Pill Menu items stagger drop down
     .fromTo(menuItemsRef.current,
@@ -65,7 +66,7 @@ const Navbar = () => {
       
       {/* Left: Custom GS Medical Logo */}
       <div className="nav-brand" ref={brandRef}>
-        <Link to="/">
+        <Link to="/" className="brand-link-reset">
           <img src={logoImg} alt="GS Medical Logo" className="nav-logo-img" />
         </Link>
       </div>
@@ -74,36 +75,33 @@ const Navbar = () => {
       <div className="nav-menu-container">
         <ul className="nav-menu">
           <li ref={addToMenuRefs} className={isActive('/') ? 'active' : ''}>
-            <Link to="/">Home</Link>
+            <Link to="/" className="menu-link-item">Home</Link>
           </li>
-          <li ref={addToMenuRefs} className={isActive('/schedule') ? 'active' : ''}>
-            <Link to="/schedule">Doctors</Link>
+          <li ref={addToMenuRefs} className={isActive('/doctors') ? 'active' : ''}>
+            <Link to="/doctors" className="menu-link-item">Doctors</Link>
           </li>
-          {/* <li ref={addToMenuRefs} className={isActive('/services') ? 'active' : ''}>
-            <Link to="#services">Services</Link>
-          </li> */}
           <li ref={addToMenuRefs} className={isActive('/appointment') ? 'active' : ''}>
-            <Link to="/appointment">Appointments</Link>
+            <Link to="/appointment" className="menu-link-item">Appointments</Link>
           </li>
           <li ref={addToMenuRefs} className={isActive('/contact') ? 'active' : ''}>
-            <Link to="/Contact">Contact</Link>
+            <Link to="/contact" className="menu-link-item">Contact</Link>
           </li>
         </ul>
       </div>
 
       {/* Right: Actions */}
       <div className="nav-actions">
-        <Link to="/login" className="btn-outline" ref={addToActionRefs}>
+        <Link to="/login" className="btn-outline text-decoration-none" ref={addToActionRefs}>
           <Building2 size={18} />
           <span>Hospital Admin</span>
         </Link>
 
-        <Link to="/login" className="btn-outline" ref={addToActionRefs}>
+        <Link to="/login" className="btn-outline text-decoration-none" ref={addToActionRefs}>
           <User size={18} />
           <span>Doctor Admin</span>
         </Link>
 
-        <Link to="/login" className="btn-solid" ref={addToActionRefs}>
+        <Link to="/login" className="btn-solid text-decoration-none" ref={addToActionRefs}>
           <Key size={18} />
           <span>Login</span>
         </Link>

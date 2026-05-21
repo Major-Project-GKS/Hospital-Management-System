@@ -35,11 +35,11 @@ const registerDoctor = async (req, res) => {
   }
 };
 
-// @desc    Get Doctor Dashboard Data (Profile + REAL Patient Queue)
+// @desc    Get Doctor Dashboard Data (Profile + COMPLETE Patient Queue for Counters)
 // @route   GET /api/doctor/dashboard/:id
 const getDoctorDashboard = async (req, res) => {
   try {
-    const { id } = req.params; // This is the DRXXXX ID
+    const { id } = req.params; 
 
     // 1. Find the Doctor Profile
     const doctor = await Doctor.findOne({ doctor_id: id });
@@ -48,15 +48,11 @@ const getDoctorDashboard = async (req, res) => {
       return res.status(404).json({ success: false, message: "Doctor not found" });
     }
 
-    // 2. Fetch REAL appointments for this specific doctor
-    // We filter by 'Waiting' status so the doctor only sees active patients.
-    // We removed the hard date filter so you can see patients booked for any day.
-    const queue = await Appointment.find({ 
-        doctor_id: id, 
-        status: 'Waiting' 
-    }).sort({ date: 1, serial_number: 1 });
+    // 2. FIXED: Fetch ALL appointments for this doctor (Waiting, Completed, Absent)
+    // This allows your frontend dashboard counters to read the lengths of different statuses live!
+    const queue = await Appointment.find({ doctor_id: id }).sort({ date: 1, serial_number: 1 });
 
-    // 3. Return structured data to the Frontend
+    // 3. Return structured data cleanly to the Frontend layout
     res.status(200).json({
       success: true,
       data: {
@@ -67,12 +63,13 @@ const getDoctorDashboard = async (req, res) => {
           email: doctor.email,
           phone: doctor.phone,
           experience: doctor.experience,
-          city: doctor.region_city,
-          languages: doctor.comfortable_language,
+          region_city: doctor.region_city, // Explicit mapping pass-through
+          state: doctor.state,
+          comfortable_language: doctor.comfortable_language,
           photo: doctor.photo,
           proof: doctor.certified_proof
         },
-        queue: queue // ✅ Real patient list from MongoDB
+        queue: queue 
       }
     });
   } catch (err) {
@@ -81,15 +78,22 @@ const getDoctorDashboard = async (req, res) => {
   }
 };
 
-// @desc    Get all doctors (For booking or manager view)
+// @desc    Get all doctors (For booking or manager cascade dropdown list mapping)
 // @route   GET /api/doctor
 const getDoctors = async (req, res) => {
   try {
     const query = req.query.department ? { department: req.query.department } : {};
-    const doctors = await Doctor.find(query).select('-password');
-    res.status(200).json({ success: true, count: doctors.length, data: doctors });
+    
+    // Explicitly select data properties ensuring no field dropouts break frontend map loops
+    const doctors = await Doctor.find(query).select('-password').sort({ name: 1 });
+    
+    res.status(200).json({ 
+      success: true, 
+      count: doctors.length, 
+      data: doctors 
+    });
   } catch (err) {
-    res.status(500).json({ success: false, error: 'Server Error' });
+    res.status(500).json({ success: false, error: 'Server Error loading doctor list arrays.' });
   }
 };
 

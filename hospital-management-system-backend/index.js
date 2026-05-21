@@ -10,9 +10,14 @@ connectDB();
 const app = express();
 
 // ==========================================
-// MIDDLEWARE
+// MIDDLEWARE (UPDATED WITH ADVANCED CORS PATH LABELS) ✅
 // ==========================================
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // Points directly to your frontend Vite dev node
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true })); 
 
@@ -43,11 +48,14 @@ app.use('/api/manager', require('./routes/managerRoutes'));
 // 5. Appointment Routes (Booking & Status Updates)
 app.use('/api/appointment', require('./routes/appointmentRoutes'));
 
-// 6. Digital Prescription Routes ✅ NEWLY ADDED
+// 6. Digital Prescription Routes
 app.use('/api/prescription', require('./routes/prescriptionRoutes'));
 
 // 7. Admin/Manager Dashboard Routes (Stats, etc.)
 app.use('/api/admin', require('./routes/adminRoutes')); 
+
+// 8. Universal Profile Editing Routes
+app.use('/api/profile', require('./routes/profileRoutes'));
 
 // ==========================================
 // ERROR HANDLING (Global)
@@ -64,4 +72,5 @@ app.listen(PORT, () => {
   console.log(`📂 Uploads accessible at http://localhost:${PORT}/uploads`);
   console.log(`📅 Appointment system active at /api/appointment`);
   console.log(`💊 Prescription system active at /api/prescription`);
+  console.log(`⚙️  Profile customization engine active at /api/profile`);
 });

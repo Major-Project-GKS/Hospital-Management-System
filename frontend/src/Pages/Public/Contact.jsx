@@ -19,7 +19,7 @@ const Contact = () => {
   const handleWhatsAppSubmit = (e) => {
     e.preventDefault();
     // The hospital's WhatsApp number (from your design)
-    const whatsappNumber = "918299431275"; 
+    const whatsappNumber = "917656938655"; 
     
     // Format the message for WhatsApp
     const text = `*New Clinic Inquiry*%0A
@@ -103,7 +103,7 @@ const Contact = () => {
             <h3>Visit Our Clinic</h3>
             <p className="address-text">Bhubaneswar, Odisha, India</p>
             <div className="info-line">
-              <Phone size={16} /> <span>8299431275</span>
+              <Phone size={16} /> <span>7656938655</span>
             </div>
             <div className="info-line">
               <Mail size={16} /> <span>info@gshealthcare.com</span>

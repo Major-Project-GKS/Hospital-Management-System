@@ -8,7 +8,7 @@ import './BookAppointment.css';
 const BookAppointment = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
-  const formRef = useRef(null);
+  const stepRef = useRef(null);
 
   // Form States
   const [patientData, setPatientData] = useState({ 
@@ -26,11 +26,11 @@ const BookAppointment = () => {
   // Result state from Backend
   const [appointmentResult, setAppointmentResult] = useState({ appId: '', serialNo: '' });
 
-  // GSAP Step Transition
+  // GSAP Step Transition Trigger Engine
   useEffect(() => {
-    gsap.fromTo(formRef.current, 
-      { opacity: 0, x: 50 }, 
-      { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }
+    gsap.fromTo(stepRef.current, 
+      { opacity: 0, x: 15 }, 
+      { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" }
     );
   }, [step]);
 
@@ -47,10 +47,14 @@ const BookAppointment = () => {
 
   const handleNextStep = (e) => {
     e.preventDefault();
-    if (step === 2) {
+    if (step === 1) {
+      if (!patientData.name || !patientData.phone || !patientData.email || !patientData.aadhar) {
+        toast.warning("Please complete all fields to proceed.");
+        return;
+      }
+      setStep(2);
+    } else if (step === 2) {
       fetchDoctors();
-    } else {
-      setStep(step + 1);
     }
   };
 
@@ -58,49 +62,46 @@ const BookAppointment = () => {
     setStep(step - 1);
   };
 
-  // ==========================================
-  // UPDATED FINAL BOOKING LOGIC (Bulletproof)
-  // ==========================================
+  // Final booking transmission script aligned with server endpoints
   const handleFinalBooking = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
-      // 1. Verify we have all necessary session data
-      const pId = localStorage.getItem('userId');
+      const pId = localStorage.getItem('userId') || "PT-GUEST";
       const pName = localStorage.getItem('userName') || patientData.name;
 
       if (!selectedDoctor || !selectedDoctor.doctor_id) {
-        toast.error("Please select a doctor again");
+        toast.error("Please select a doctor to confirm.");
         setIsSubmitting(false);
         return;
       }
 
+      // Payload parameters explicitly balanced with backend model schemas
       const payload = {
         patient_id: pId,
         patient_name: pName,
         doctor_id: selectedDoctor.doctor_id, 
+        doctor_name: selectedDoctor.name, 
         date: bookingData.date,
-        time_slot: "09:00 AM" // You can later make this dynamic
+        time_slot: "09:00 AM" 
       };
 
-      console.log("Attempting to Book:", payload);
+      console.log("Submitting transaction tracking payload:", payload);
 
       const res = await axios.post('http://localhost:5000/api/appointment/book', payload);
       
       if (res.data.success) {
-        // Map the backend response to the ticket state
         setAppointmentResult({ 
           appId: res.data.data.appointment_id, 
           serialNo: res.data.data.serial_number 
         });
-        
-        setStep(4); // Trigger GSAP transition to Step 4
+        setStep(4); 
         toast.success("Appointment Booked Successfully!");
       }
     } catch (err) {
-      console.error("Booking Error Details:", err);
-      const errorMsg = err.response?.data?.error || "Server Error: Could not book appointment";
+      console.error("Booking Transmission Crash:", err);
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || "Server Error: Could not book appointment";
       toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
@@ -108,174 +109,258 @@ const BookAppointment = () => {
   };
 
   return (
-    <div className="booking-page">
-      <div className="booking-container">
+    <div className="booking-single-frame-wrapper">
+      <div className="booking-workspace-split">
         
-        {/* Progress Tracker */}
-        <div className="progress-bar">
-          <div className={`step ${step >= 1 ? 'active' : ''}`}>1. Details</div>
-          <div className={`step ${step >= 2 ? 'active' : ''}`}>2. Schedule</div>
-          <div className={`step ${step >= 3 ? 'active' : ''}`}>3. Doctor</div>
-          <div className={`step ${step >= 4 ? 'active' : ''}`}>4. Confirm</div>
-        </div>
-
-        <div className="booking-card" ref={formRef}>
-          
-          {/* STEP 1: Patient Details */}
-          {step === 1 && (
-            <form onSubmit={handleNextStep}>
-              <h2>Patient Information</h2>
-              <p className="subtitle">Confirm or enter the patient's basic details.</p>
-              
-              <div className="form-group">
-                <label>Full Name</label>
-                <input 
-                  type="text" 
-                  value={patientData.name} 
-                  onChange={(e) => /^[a-zA-Z\s]*$/.test(e.target.value) && setPatientData({...patientData, name: e.target.value})} 
-                  required 
-                />
+        {/* LEFT WORKSPACE COLUMN: INTERACTIVE ACTIVE FORM STEPS */}
+        <div className="booking-interactive-card" ref={stepRef}>
+          {/* Form Step Status Header */}
+          <div className="mini-step-indicator-bar">
+            {['Patient Info', 'Schedule Details', 'Choose Doctor', 'Verification'].map((label, index) => (
+              <div key={label} className={`mini-step ${step === index + 1 ? 'active' : ''} ${step > index + 1 ? 'done' : ''}`}>
+                <span className="dot-index">{index + 1}</span>
+                <span className="dot-label">{label}</span>
               </div>
+            ))}
+          </div>
 
-              <div className="form-group">
-                <label>Phone Number</label>
-                <div className="phone-input-wrapper">
-                  <span className="country-code">+91</span>
-                  <input 
-                    type="tel" 
-                    value={patientData.phone} 
-                    maxLength="10"
-                    onChange={(e) => setPatientData({...patientData, phone: e.target.value.replace(/\D/g, '')})} 
-                    required 
-                  />
+          <div className="step-content-node">
+            {/* STEP 1: Patient Information */}
+            {step === 1 && (
+              <form onSubmit={handleNextStep} className="compact-node-form">
+                <div className="node-title-block">
+                  <h2>Patient Information</h2>
+                  <p>Confirm or enter the patient's basic details.</p>
+                </div>
+                
+                <div className="form-grid-row">
+                  <div className="form-group-node">
+                    <label>Full Name</label>
+                    <input 
+                      type="text" 
+                      value={patientData.name} 
+                      onChange={(e) => /^[a-zA-Z\s]*$/.test(e.target.value) && setPatientData({...patientData, name: e.target.value})} 
+                      placeholder="Enter full name"
+                      required 
+                    />
+                  </div>
+
+                  <div className="form-group-node">
+                    <label>Phone Number</label>
+                    <div className="phone-input-wrapper-node">
+                      <span className="country-code-node">+91</span>
+                      <input 
+                        type="tel" 
+                        value={patientData.phone} 
+                        maxLength="10"
+                        placeholder="10-digit number"
+                        onChange={(e) => setPatientData({...patientData, phone: e.target.value.replace(/\D/g, '')})} 
+                        required 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-grid-row">
+                  <div className="form-group-node">
+                    <label>Email Address</label>
+                    <input 
+                      type="email" 
+                      value={patientData.email} 
+                      placeholder="name@example.com"
+                      onChange={(e) => setPatientData({...patientData, email: e.target.value})} 
+                      required 
+                    />
+                  </div>
+
+                  <div className="form-group-node">
+                    <label>Aadhar Number</label>
+                    <input 
+                      type="text" 
+                      value={patientData.aadhar} 
+                      maxLength="12"
+                      placeholder="12-digit identification number"
+                      onChange={(e) => setPatientData({...patientData, aadhar: e.target.value.replace(/\D/g, '')})} 
+                      required 
+                    />
+                  </div>
+                </div>
+                
+                <div className="action-footer-group">
+                  <div />
+                  <button type="submit" className="btn-action-primary">Next Step &rarr;</button>
+                </div>
+              </form>
+            )}
+
+            {/* STEP 2: Date & Department Selection */}
+            {step === 2 && (
+              <form onSubmit={handleNextStep} className="compact-node-form">
+                <div className="node-title-block">
+                  <h2>Select Date & Care Track</h2>
+                  <p>Choose your preferred date and clinical department.</p>
+                </div>
+                
+                <div className="form-grid-row">
+                  <div className="form-group-node">
+                    <label>Appointment Date</label>
+                    <input 
+                      type="date" 
+                      min={new Date().toLocaleDateString('en-CA')}
+                      value={bookingData.date} 
+                      onChange={(e)=>setBookingData({...bookingData, date: e.target.value})} 
+                      required 
+                    />
+                  </div>
+
+                  <div className="form-group-node">
+                    <label>Clinical Department</label>
+                    <select value={bookingData.department} onChange={(e)=>setBookingData({...bookingData, department: e.target.value})} required>
+                      <option value="">Select Department...</option>
+                      <option value="Cardiology">Cardiology</option>
+                      <option value="Neurology">Neurology</option>
+                      <option value="Orthopedics">Orthopedics</option>
+                      <option value="General Medicine">General Medicine</option>
+                      <option value="Pediatrics">Pediatrics</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="action-footer-group">
+                  <button type="button" className="btn-action-back" onClick={handlePrevStep}>&larr; Back</button>
+                  <button type="submit" className="btn-action-primary">Find Available Doctors</button>
+                </div>
+              </form>
+            )}
+
+            {/* STEP 3: Specialist Assignment Panel */}
+            {step === 3 && (
+              <div className="compact-node-form">
+                <div className="node-title-block">
+                  <h2>Available Specialists</h2>
+                  <p>Select from active medical practitioners in {bookingData.department}.</p>
+                </div>
+                
+                <div className="doctor-scroll-frame">
+                  {doctors.length > 0 ? (
+                    doctors.map(doc => (
+                      <div 
+                        key={doc.doctor_id} 
+                        className={`doctor-selection-row-card ${selectedDoctor?.doctor_id === doc.doctor_id ? 'selected' : ''}`}
+                        onClick={() => setSelectedDoctor(doc)}
+                      >
+                        <div className="doc-meta-left">
+                          <h4>Dr. {doc.name}</h4>
+                          <p>{doc.experience} Yrs Exp • {doc.region_city || 'Odisha'}</p>
+                          <small>{doc.comfortable_language || 'Odia, English'}</small>
+                        </div>
+                        <div className="doc-meta-right">
+                          <span className="fee-token">₹500</span>
+                          <span className="select-indicator-dot"></span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="empty-doctors-callout">⚠️ No doctors found registered in this care track.</div>
+                  )}
+                </div>
+                
+                <div className="action-footer-group">
+                  <button type="button" className="btn-action-back" onClick={handlePrevStep}>&larr; Back</button>
+                  <button 
+                    type="button" 
+                    className="btn-action-primary" 
+                    disabled={!selectedDoctor || isSubmitting}
+                    onClick={handleFinalBooking}
+                  >
+                    {isSubmitting ? "Processing Allocation..." : "Confirm & Commit Booking ⚡"}
+                  </button>
                 </div>
               </div>
+            )}
 
-              <div className="form-group">
-                <label>Email Address</label>
-                <input 
-                  type="email" 
-                  value={patientData.email} 
-                  onChange={(e) => setPatientData({...patientData, email: e.target.value})} 
-                  required 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Aadhar Number</label>
-                <input 
-                  type="text" 
-                  value={patientData.aadhar} 
-                  maxLength="12"
-                  onChange={(e) => setPatientData({...patientData, aadhar: e.target.value.replace(/\D/g, '')})} 
-                  required 
-                />
-              </div>
-              
-              <div className="button-group">
-                <button type="submit" className="btn-next">Next Step</button>
-              </div>
-            </form>
-          )}
-
-          {/* STEP 2: Date & Department */}
-          {step === 2 && (
-            <form onSubmit={handleNextStep}>
-              <h2>Select Date & Department</h2>
-              <p className="subtitle">When do you want to visit and which specialist?</p>
-              
-              <div className="form-group">
-                <label>Appointment Date</label>
-                <input 
-                  type="date" 
-                  min={new Date().toLocaleDateString('en-CA')}
-                  value={bookingData.date} 
-                  onChange={(e)=>setBookingData({...bookingData, date: e.target.value})} 
-                  required 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Department</label>
-                <select value={bookingData.department} onChange={(e)=>setBookingData({...bookingData, department: e.target.value})} required>
-                  <option value="">Select Department...</option>
-                  <option value="Cardiology">Cardiology</option>
-                  <option value="Neurology">Neurology</option>
-                  <option value="Orthopedics">Orthopedics</option>
-                  <option value="General Medicine">General Medicine</option>
-                  <option value="Pediatrics">Pediatrics</option>
-                </select>
-              </div>
-              
-              <div className="button-group">
-                <button type="button" className="btn-prev" onClick={handlePrevStep}>Back</button>
-                <button type="submit" className="btn-next">Find Doctors</button>
-              </div>
-            </form>
-          )}
-
-          {/* STEP 3: Select Doctor (Real Data) */}
-          {step === 3 && (
-            <div>
-              <h2>Available Specialists</h2>
-              <p className="subtitle">Showing doctors for {bookingData.department}</p>
-              
-              <div className="doctor-selection-list">
-                {doctors.length > 0 ? (
-                  doctors.map(doc => (
-                    <div 
-                      key={doc.doctor_id} 
-                      className={`doctor-select-card ${selectedDoctor?.doctor_id === doc.doctor_id ? 'selected' : ''}`}
-                      onClick={() => setSelectedDoctor(doc)}
-                    >
-                      <div className="doc-info">
-                        <h4>Dr. {doc.name}</h4>
-                        <p>{doc.experience} Years Experience | {doc.region_city}</p>
-                        <small>{doc.comfortable_language}</small>
-                      </div>
-                      <div className="doc-fee">₹500</div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-docs-message">No doctors found in this department.</div>
-                )}
-              </div>
-              
-              <div className="button-group">
-                <button type="button" className="btn-prev" onClick={handlePrevStep}>Back</button>
+            {/* STEP 4: Success Ticket Presentation */}
+            {step === 4 && (
+              <div className="success-screen-node">
+                <div className="success-badge-vibe">🎉</div>
+                <h3>Booking Confirmed Successfully!</h3>
+                <p>Your appointment routing path has been committed to the registry matrix.</p>
+                
+                <div className="mini-success-ticket-receipt">
+                  <div className="receipt-row"><span>Assigned Specialist:</span><strong>Dr. {selectedDoctor?.name}</strong></div>
+                  <div className="receipt-row"><span>Appointment ID:</span><mark>{appointmentResult.appId}</mark></div>
+                  <div className="receipt-row big-serial">
+                    <span>Queue token sequence:</span>
+                    <strong className="queue-glow-num">{appointmentResult.serialNo}</strong>
+                  </div>
+                </div>
+                
                 <button 
-                  type="button" 
-                  className="btn-book" 
-                  disabled={!selectedDoctor || isSubmitting}
-                  onClick={handleFinalBooking}
+                  className="btn-action-primary block-btn" 
+                  onClick={() => navigate('/patient/dashboard')}
                 >
-                  {isSubmitting ? "Processing..." : "Confirm & Book"}
+                  Return to Dashboard
                 </button>
               </div>
-            </div>
-          )}
-
-          {/* STEP 4: Real Confirmation Ticket */}
-          {step === 4 && (
-            <div className="success-screen">
-              <div className="success-icon">✅</div>
-              <h2>Booking Confirmed!</h2>
-              <p>Your appointment is scheduled with Dr. {selectedDoctor?.name}</p>
-              
-              <div className="ticket">
-                <div className="ticket-row"><span>Patient:</span> <strong>{patientData.name}</strong></div>
-                <div className="ticket-row"><span>Dept:</span> <strong>{bookingData.department}</strong></div>
-                <div className="ticket-row"><span>Date:</span> <strong>{bookingData.date}</strong></div>
-                <div className="ticket-divider"></div>
-                <div className="ticket-row highlight"><span>Appointment ID:</span> <strong>{appointmentResult.appId}</strong></div>
-                <div className="ticket-row highlight"><span>Queue No:</span> <strong className="serial-num" style={{color: '#e11d48', fontSize: '1.5rem'}}>{appointmentResult.serialNo}</strong></div>
-              </div>
-              
-              <button className="btn-home" style={{width: '100%', backgroundColor: '#059669', color: 'white'}} onClick={() => navigate('/patient/dashboard')}>Go to My Dashboard</button>
-            </div>
-          )}
-
+            )}
+          </div>
         </div>
+
+        {/* RIGHT COLUMN: PERSISTENT SUMMARY VISUAL OVERVIEW */}
+        <div className="booking-summary-sidebar-card">
+          <h3>Live Booking Summary</h3>
+          <div className="summary-vertical-flow">
+            
+            <div className="summary-node-item">
+              <span className="summary-node-icon">👤</span>
+              <div className="summary-node-text">
+                <label>Patient Name</label>
+                <p>{patientData.name || <span className="placeholder-text">Awaiting Input...</span>}</p>
+              </div>
+            </div>
+
+            <div className="summary-node-item">
+              <span className="summary-node-icon">📞</span>
+              <div className="summary-node-text">
+                <label>Contact Contact</label>
+                <p>{patientData.phone ? `+91 ${patientData.phone}` : <span className="placeholder-text">Awaiting Input...</span>}</p>
+              </div>
+            </div>
+
+            <div className="summary-node-item">
+              <span className="summary-node-icon">📅</span>
+              <div className="summary-node-text">
+                <label>Target Date</label>
+                <p>{bookingData.date || <span className="placeholder-text">Not Selected</span>}</p>
+              </div>
+            </div>
+
+            <div className="summary-node-item">
+              <span className="summary-node-icon">🏥</span>
+              <div className="summary-node-text">
+                <label>Department Care Line</label>
+                <p>{bookingData.department || <span className="placeholder-text">Not Selected</span>}</p>
+              </div>
+            </div>
+
+            <div className="summary-node-item highlighted-doc-node">
+              <span className="summary-node-icon">👨‍⚕️</span>
+              <div className="summary-node-text">
+                <label>Assigned Medical Practitioner</label>
+                <p className="bold-doc-name">
+                  {selectedDoctor ? `Dr. ${selectedDoctor.name}` : <span className="placeholder-text">Select in Step 3</span>}
+                </p>
+              </div>
+            </div>
+
+          </div>
+          
+          <div className="sidebar-cost-total-panel">
+            <span>Consultation Retainer:</span>
+            <strong>₹500.00</strong>
+          </div>
+        </div>
+
       </div>
     </div>
   );

@@ -1,116 +1,151 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import './PublicSchedule.css';
 
 const PublicSchedule = () => {
-  // Mock Data (This will later come from your backend MongoDB/Express API)
-  const mockSchedule = [
-    { id: 'DR1001', name: 'Dr. Ramesh Sharma', department: 'Cardiology', day: 'Monday', time: '09:00 AM - 01:00 PM' },
-    { id: 'DR1002', name: 'Dr. Anita Desai', department: 'Neurology', day: 'Monday', time: '10:00 AM - 02:00 PM' },
-    { id: 'DR1003', name: 'Dr. John Smith', department: 'Orthopedics', day: 'Tuesday', time: '11:00 AM - 04:00 PM' },
-    { id: 'DR1004', name: 'Dr. Priya Patel', department: 'General Medicine', day: 'Wednesday', time: '08:00 AM - 12:00 PM' },
-    { id: 'DR1001', name: 'Dr. Ramesh Sharma', department: 'Cardiology', day: 'Thursday', time: '02:00 PM - 06:00 PM' },
-    { id: 'DR1005', name: 'Dr. Ali Khan', department: 'Pediatrics', day: 'Friday', time: '09:00 AM - 01:00 PM' },
-  ];
-
-  // State for search filters
-  const [filterDay, setFilterDay] = useState('');
-  const [filterDept, setFilterDept] = useState('');
-
-  // Refs for GSAP animation
-  const cardsRef = useRef([]);
-  const headerRef = useRef(null);
-
-  const addToRefs = (el) => {
-    if (el && !cardsRef.current.includes(el)) {
-      cardsRef.current.push(el);
-    }
-  };
+  const [doctors, setDoctors] = useState([]);
+  const [schedules, setSchedules] = useState([]);
+  const [selectedSpecialization, setSelectedSpecialization] = useState('All');
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const navigate = useNavigate();
+  // Standardized URL base (removed trailing slashes to prevent route parsing dropouts)
+  const UPLOADS_URL = 'http://localhost:5000/uploads/';
 
   useEffect(() => {
-    // Animate Header
-    gsap.from(headerRef.current, { y: -20, opacity: 0, duration: 0.8, ease: "power2.out" });
-    
-    // Animate Cards (Resetting refs array to avoid duplicates on re-render)
-    cardsRef.current = [];
+    const fetchPublicDirectory = async () => {
+      try {
+        // 1. Fetch doctors independently from the core endpoint
+        const docsRes = await axios.get('http://localhost:5000/api/doctor');
+        setDoctors(docsRes.data.data || []);
+        
+        // 2. Safe, decoupled fallback block to load rosters without crashing main state
+        try {
+          const scheduleRes = await axios.get('http://localhost:5000/api/appointment/schedule/all');
+          setSchedules(scheduleRes.data.data || []);
+        } catch (scheduleErr) {
+          console.warn("⚠️ Shift rosters empty or unconfigured yet:", scheduleErr);
+          setSchedules([]); // Fallback grace state to prevent app failure
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error loading directory data:", err);
+        toast.error("Unable to load medical staff directory list.");
+        setIsLoading(false);
+      }
+    };
+    fetchPublicDirectory();
   }, []);
 
-  // Animate cards every time the filtered list changes
-  useEffect(() => {
-    if (cardsRef.current.length > 0) {
-      gsap.fromTo(cardsRef.current, 
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power2.out" }
-      );
-    }
-  }, [filterDay, filterDept]);
+  const handleBookClick = (doctorId) => {
+    localStorage.setItem('bookingDoctorId', doctorId);
+    navigate('/appointment');
+  };
 
-  // Filtering Logic
-  const filteredSchedule = mockSchedule.filter(doc => {
-    const matchDay = filterDay === '' || doc.day === filterDay;
-    const matchDept = filterDept === '' || doc.department.toLowerCase().includes(filterDept.toLowerCase());
-    return matchDay && matchDept;
+  const filteredDoctors = doctors.filter(doc => {
+    if (selectedSpecialization === 'All') return true;
+    return doc.department?.trim().toLowerCase() === selectedSpecialization.trim().toLowerCase();
   });
 
-  return (
-    <div className="schedule-page">
-      <div className="schedule-container">
-        
-        {/* Header & Filters */}
-        <div className="schedule-header" ref={headerRef}>
-          <h2>Doctor Availability Schedule</h2>
-          <p>Find the right specialist at the right time.</p>
-          
-          <div className="filter-bar">
-            <div className="filter-group">
-              <label>Filter by Day</label>
-              <select value={filterDay} onChange={(e) => setFilterDay(e.target.value)}>
-                <option value="">All Days</option>
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-              </select>
-            </div>
-            
-            <div className="filter-group">
-              <label>Search Department</label>
-              <input 
-                type="text" 
-                placeholder="e.g. Cardiology" 
-                value={filterDept}
-                onChange={(e) => setFilterDept(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
+  if (isLoading) {
+    return (
+      <div className="directory-loading-container">
+        <div className="pulse-loader">🏥</div>
+        <h2>Syncing Specialist Roster Matrices...</h2>
+      </div>
+    );
+  }
 
-        {/* Schedule Grid */}
-        <div className="schedule-grid">
-          {filteredSchedule.length > 0 ? (
-            filteredSchedule.map((doc, index) => (
-              <div className="doctor-card" key={`${doc.id}-${doc.day}`} ref={addToRefs}>
-                <div className="doc-header">
-                  <h3>{doc.name}</h3>
-                  <span className="doc-id">{doc.id}</span>
+  return (
+    <div className="public-directory-wrapper single-screen-frame">
+      {/* Compact Header */}
+      <header className="directory-hero compact-hero">
+        <div className="hero-content">
+          <h1>Our Specialized Medical Staff</h1>
+          <p>Find trusted medical professionals and view real-time dynamic day availability options.</p>
+        </div>
+        
+        <div className="filter-controls-container">
+          <select 
+            value={selectedSpecialization} 
+            onChange={(e) => setSelectedSpecialization(e.target.value)}
+            className="specialization-select-dropdown"
+          >
+            <option value="All">All Specializations</option>
+            <option value="General Medicine">General Medicine</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Neurology">Neurology</option>
+            <option value="Orthopedics">Orthopedics</option>
+          </select>
+        </div>
+      </header>
+
+      {/* Main Layout Area */}
+      {filteredDoctors.length > 0 ? (
+        <div className="directory-grid-matrix horizontal-cards">
+          {filteredDoctors.map((doc) => {
+            const docRosters = schedules.filter(s => s.doctor_id === doc.doctor_id);
+
+            return (
+              <div key={doc._id} className="doctor-directory-card horizontal-split">
+                {/* Left Side: Photo Frame */}
+                <div className="card-image-left-wrapper">
+                  {doc.photo ? (
+                    <img src={`${UPLOADS_URL}${doc.photo}`} alt={`Dr. ${doc.name}`} className="doctor-card-img-contain" />
+                  ) : (
+                    <div className="doctor-fallback-avatar">👨‍⚕️</div>
+                  )}
+                  <span className="department-badge-pill-corner">{doc.department}</span>
                 </div>
-                <div className="doc-body">
-                  <p><strong>Department:</strong> {doc.department}</p>
-                  <p><strong>Day:</strong> <span className="highlight-day">{doc.day}</span></p>
-                  <p><strong>Time:</strong> {doc.time}</p>
+
+                {/* Right Side: Data Content */}
+                <div className="card-body-right-content">
+                  <div className="identity-block-row">
+                    <h3>Dr. {doc.name}</h3>
+                    <span className="doctor-id-pill">ID: {doc.doctor_id}</span>
+                  </div>
+
+                  <div className="demographic-metadata-row-grid">
+                    <p><strong>Exp:</strong> {doc.experience} Yrs</p>
+                    <p><strong>Lang:</strong> {doc.comfortable_language || 'Odia, Eng'}</p>
+                    <p><strong>Region:</strong> {doc.region_city || 'Odisha'}</p>
+                  </div>
+
+                  <div className="availability-schedule-mini-timeline">
+                    <h5>Operational Duty Roster</h5>
+                    {docRosters.length > 0 ? (
+                      <div className="roster-badge-strip-mini">
+                        {docRosters.map((sched) => (
+                          <div key={sched._id} className="active-day-time-pill-mini">
+                            <span className="pilled-day-name-mini">{sched.day_of_week}:</span>
+                            <span className="pilled-time-frame-mini">{sched.shift_start} - {sched.shift_end}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="no-active-roster-callout-mini">No active shifts assigned.</p>
+                    )}
+                  </div>
+
+                  <button 
+                    onClick={() => handleBookClick(doc.doctor_id)} 
+                    className="btn-trigger-appointment-booking-mini"
+                  >
+                    📅 Book Appointment
+                  </button>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="no-results">
-              <p>No doctors found for the selected filters.</p>
-            </div>
-          )}
+            );
+          })}
         </div>
-
-      </div>
+      ) : (
+        <div className="empty-directory-state">
+          <h3>No medical personnel found matching criteria.</h3>
+        </div>
+      )}
     </div>
   );
 };

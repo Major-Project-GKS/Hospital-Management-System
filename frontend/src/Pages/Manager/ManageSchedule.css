@@ -1,62 +1,233 @@
-/* src/Pages/Manager/ManageSchedule.css */
+/* Container Layout Matrix */
 .manage-schedule-container {
-  padding: 3rem;
-  background-color: var(--bg-light);
-  min-height: calc(100vh - 70px);
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 30px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #1e293b;
 }
 
+/* Header Component Configuration Row */
 .schedule-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 35px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 20px;
 }
 
+.schedule-title-block h1 {
+    color: #0f172a;
+    font-size: 2rem;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+}
+
+.schedule-title-block p {
+    color: #64748b;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Functional Back Navigation Control Button */
 .btn-back {
-  background: transparent;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
+    background-color: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.schedule-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+.btn-back:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
 }
 
-.schedule-form-panel, .schedule-list-panel {
-  background-color: var(--white);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+/* Split Column Workspace Grid System */
+.schedule-workspace-layout {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 30px;
+    align-items: start;
 }
 
-.time-group {
-  display: flex;
-  gap: 1rem;
+@media (max-width: 1024px) {
+    .schedule-workspace-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
-.btn-submit-schedule {
-  width: 100%;
-  padding: 1rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 1rem;
+/* Shared Panel Card Aesthetics */
+.roster-form-card, .roster-display-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e2e8f0;
 }
 
-.schedule-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  border-left: 4px solid var(--primary-color);
+.roster-form-card h3, .roster-display-card h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.2rem;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* Interactive Scheduling Management Form Setup */
+.roster-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.roster-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.roster-field-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.roster-form select, 
+.roster-form input {
+    padding: 11px 14px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 0.95rem;
+    color: #1e293b;
+    outline: none;
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.roster-form select:focus, 
+.roster-form input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 131, 246, 0.1);
+}
+
+.roster-form select:disabled {
+    background-color: #f8fafc;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* Dual Column Horizontal Row for Time Fields */
+.time-range-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Allocation Commit Action Button Configuration */
+.btn-commit-roster {
+    background-color: #0f172a;
+    color: #ffffff;
+    border: none;
+    padding: 13px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-commit-roster:hover {
+    background-color: #10b981; /* Shift to operational signature green on valid state submission hover */
+}
+
+.btn-commit-roster:active {
+    transform: scale(0.98);
+}
+
+/* Registry Master Listing Table Grid Formatting */
+.table-overflow-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.roster-master-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    background: #ffffff;
+}
+
+.roster-master-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 14px;
+    border-bottom: 2px solid #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.roster-master-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+.roster-master-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Subtext Meta Labels inside Grid Nodes */
+.sub-id {
+    margin: 3px 0 0 0;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+/* Presentation Badges & Pilling Element Rules */
+.day-badge-label {
+    background-color: #f1f5f9;
+    color: #334155;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+.dept-pill-text {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+/* Visual Fallback / Compilation State Screens styling */
+.empty-roster-text {
+    text-align: center;
+    color: #64748b;
+    padding: 50px 0 !important;
+    font-style: italic;
+}
+
+.schedule-loading-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    color: #475569;
 }

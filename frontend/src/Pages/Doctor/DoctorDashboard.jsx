@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import EditProfileComp from '../../Components/EditProfileComp';
 import './DoctorDashboard.css';
 
 const DoctorDashboard = () => {
@@ -10,6 +11,7 @@ const DoctorDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [doctorData, setDoctorData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false); // Controls view state toggling
   
   // --- Prescription States ---
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
@@ -107,31 +109,79 @@ const DoctorDashboard = () => {
         <div className="doc-profile">
           <div className="avatar">
             {doctorData.profile.photo ? (
-              <img src={`${UPLOADS_URL}${doctorData.profile.photo}`} alt="Doc" style={{width:'80px', height:'80px', borderRadius:'50%', objectFit:'cover'}} />
+              <img src={`${UPLOADS_URL}${doctorData.profile.photo}`} alt="Doc" className="sidebar-profile-photo" />
             ) : "👨‍⚕️"}
           </div>
           <h3>Dr. {doctorData.profile.name}</h3>
           <p>{doctorData.profile.department} | {doctorData.profile.doctor_id}</p>
         </div>
         <ul className="sidebar-menu">
-          <li className={activeTab === 'Dashboard' ? 'active' : ''} onClick={() => setActiveTab('Dashboard')}>Dashboard</li>
-          <li className={activeTab === 'Queue' ? 'active' : ''} onClick={() => setActiveTab('Queue')}>Patient Queue</li>
-          <li className={activeTab === 'Profile' ? 'active' : ''} onClick={() => setActiveTab('Profile')}>My Profile</li>
+          <li className={activeTab === 'Dashboard' ? 'active' : ''} onClick={() => { setActiveTab('Dashboard'); setIsEditing(false); }}>Dashboard</li>
+          <li className={activeTab === 'Queue' ? 'active' : ''} onClick={() => { setActiveTab('Queue'); setIsEditing(false); }}>Patient Queue</li>
+          <li className={activeTab === 'Profile' ? 'active' : ''} onClick={() => { setActiveTab('Profile'); setIsEditing(false); }}>My Profile</li>
           <li className="logout-btn" onClick={() => { localStorage.clear(); window.location.href = '/'; }}>Logout</li>
         </ul>
       </aside>
 
       <main className="dashboard-content">
+        {/* --- DYNAMIC DASHBOARD OVERVIEW VIEW TAB ✅ --- */}
         {activeTab === 'Dashboard' && (
-          <div className="welcome-box">
-             <h2>Welcome back, Dr. {doctorData.profile.name.split(' ')[0]}! 👋</h2>
-             <p>You have {doctorData.queue.filter(q => q.status === 'Waiting').length} total patients waiting in your queue.</p>
+          <div className="doctor-overview-section">
+            {/* Welcome Header Hero Banner */}
+            <div className="welcome-box">
+               <h2>Welcome back, Dr. {doctorData.profile.name.split(' ')[0]}! 👋</h2>
+               <p>Institutional Node: {doctorData.profile.department} | Medical Portal Operational.</p>
+            </div>
+
+            {/* Metric Counters Grid Area */}
+            <div className="doctor-stats-grid">
+              {/* CARD 1: WAITING QUEUE COUNTER */}
+              <div className="doc-stat-card amber-glow clickable-tab-card" onClick={() => setActiveTab('Queue')}>
+                <div className="card-icon-wrapper">⏳</div>
+                <div className="card-metric-info">
+                  <h3>{doctorData.queue.filter(q => q.status === 'Waiting').length}</h3>
+                  <p>Patients Waiting</p>
+                </div>
+              </div>
+
+              {/* CARD 2: COMPLETED CHECKUPS COUNTER */}
+              <div className="doc-stat-card emerald-glow clickable-tab-card" onClick={() => setActiveTab('Queue')}>
+                <div className="card-icon-wrapper">✅</div>
+                <div className="card-metric-info">
+                  <h3>{doctorData.queue.filter(q => q.status === 'Completed').length}</h3>
+                  <p>Completed Checkups</p>
+                </div>
+              </div>
+
+              {/* CARD 3: TOTAL APPOINTMENTS COUNTER */}
+              <div className="doc-stat-card sapphire-glow">
+                <div className="card-icon-wrapper">📅</div>
+                <div className="card-metric-info">
+                  <h3>{doctorData.queue.length}</h3>
+                  <p>Total Allocations</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Reference Performance Summary */}
+            <div className="queue-summary-preview-card">
+              <div className="preview-card-header">
+                <h3>Shift Activity Log Summary</h3>
+                <button className="btn-view-all" onClick={() => setActiveTab('Queue')}>Go to Patient Queue &rarr;</button>
+              </div>
+              <div className="preview-metrics-strip">
+                <p><strong>Active Department Stream:</strong> {doctorData.profile.department}</p>
+                <p><strong>Absent Drop-outs:</strong> {doctorData.queue.filter(q => q.status === 'Absent').length} Cases</p>
+                <p><strong>Current Load Factor:</strong> {doctorData.queue.filter(q => q.status === 'Waiting').length > 3 ? "🛑 High Load" : "🟢 Stable Load"}</p>
+              </div>
+            </div>
           </div>
         )}
 
+        {/* --- PATIENT QUEUE WORKSPACE TAB --- */}
         {activeTab === 'Queue' && (
           <div className="queue-section">
-             <div className="section-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
+             <div className="section-header">
                 <h2>Patient Appointment Queue</h2>
                 <input 
                   type="text" 
@@ -175,15 +225,54 @@ const DoctorDashboard = () => {
                               <button className="btn-absent" onClick={() => handleStatusChange(p.appointment_id, 'Absent')}>❌ Absent</button>
                             </div>
                           )}
-                          {p.status !== 'Waiting' && <span style={{color: p.status === 'Completed' ? '#059669' : '#e11d48', fontSize:'0.9rem', fontWeight: 'bold'}}>{p.status}</span>}
+                          {p.status === 'Waiting' ? null : (
+                            <span className={`static-status-text ${p.status.toLowerCase()}`}>
+                              {p.status}
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))
                   ) : (
-                    <tr><td colSpan="6" style={{textAlign:'center', padding:'20px'}}>No matching patients found.</td></tr>
+                    <tr><td colSpan="6" className="empty-table-text">No matching patients found.</td></tr>
                   )}
                 </tbody>
              </table>
+          </div>
+        )}
+
+        {/* --- READ-ONLY / EDIT PROFILE MANAGEMENT TAB --- */}
+        {activeTab === 'Profile' && (
+          <div className="doctor-profile-tab-section">
+            <div className="profile-section-header">
+              <h2>My Profile Management</h2>
+              {!isEditing && <button className="btn-corner-edit" onClick={() => setIsEditing(true)}>✏️ Edit Profile</button>}
+            </div>
+
+            {!isEditing ? (
+              <div className="dash-card profile-details-card">
+                <div className="profile-details-grid">
+                  <div><h4 className="detail-label">Full Name</h4><p className="detail-value">Dr. {doctorData.profile.name}</p></div>
+                  <div><h4 className="detail-label">Specialization Department</h4><p className="detail-value">{doctorData.profile.department}</p></div>
+                  <div><h4 className="detail-label">Institutional Contact Email</h4><p className="detail-value">{doctorData.profile.email}</p></div>
+                  <div><h4 className="detail-label">Phone Reference</h4><p className="detail-value">+91 {doctorData.profile.phone}</p></div>
+                  <div><h4 className="detail-label">Clinical Experience</h4><p className="detail-value">{doctorData.profile.experience} Years</p></div>
+                  <div><h4 className="detail-label">Operational Region/City</h4><p className="detail-value">{doctorData.profile.region_city || 'Odisha'}</p></div>
+                  <div><h4 className="detail-label">Comfortable Languages</h4><p className="detail-value">{doctorData.profile.comfortable_language || 'English, Hindi'}</p></div>
+                  <div><h4 className="detail-label">Assigned Medical State</h4><p className="detail-value">{doctorData.profile.state || 'Odisha'}</p></div>
+                </div>
+              </div>
+            ) : (
+              <EditProfileComp 
+                initialData={doctorData.profile}
+                role="Doctor"
+                onCancel={() => setIsEditing(false)}
+                onUpdateSuccess={(updatedFields) => {
+                  setDoctorData({ ...doctorData, profile: { ...doctorData.profile, ...updatedFields } });
+                  setIsEditing(false);
+                }}
+              />
+            )}
           </div>
         )}
 

@@ -1,16 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './LoginRegister.css';
 
 const LoginRegister = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgot, setIsForgot] = useState(false); 
   const [role, setRole] = useState('Patient');
-  const formContainerRef = useRef(null);
+  const cardRef = useRef(null);
+  const formWorkspaceRef = useRef(null);
+  const navigate = useNavigate();
 
   // Login States
   const [loginData, setLoginData] = useState({ login_id: '', password: '' });
+
+  // Reset Password States
+  const [resetData, setResetData] = useState({ email: '', aadhar: '', newPassword: '' });
 
   // Registration States
   const [regData, setRegData] = useState({
@@ -19,9 +26,13 @@ const LoginRegister = () => {
   });
   const [files, setFiles] = useState({ photo: null, aadharCard: null, proof: null });
 
+  // Smooth Entry Animation Trigger Sequence
   useEffect(() => {
-    gsap.fromTo(formContainerRef.current, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" });
-  }, [isLogin]);
+    gsap.fromTo(formWorkspaceRef.current, 
+      { opacity: 0, y: 10 }, 
+      { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
+    );
+  }, [isLogin, isForgot, role]);
 
   const handleFileChange = (e) => {
     setFiles({ ...files, [e.target.name]: e.target.files[0] });
@@ -33,51 +44,32 @@ const LoginRegister = () => {
 
     try {
       if (isLogin) {
-        // ==========================================
-        // 1. FIXED LOGIN LOGIC & REDIRECTION
-        // ==========================================
-        const res = await axios.post(`${API_BASE_URL}/auth/login`, loginData);
+        const res = await axios.post(`${API_BASE_URL}/auth/login`, {
+          login_id: loginData.login_id.toUpperCase(),
+          password: loginData.password
+        });
         
-        // Grab data from backend response
-        const backendData = res.data.data;
-        const loggedInId = backendData.login_id || backendData.application_id || backendData.doctor_id || backendData.manager_id || loginData.login_id;
-        let loggedInRole = backendData.role;
+        if (res.data.success) {
+          const { token, user } = res.data;
+          localStorage.setItem('token', token);
+          localStorage.setItem('userId', user.id);
+          localStorage.setItem('userName', user.name);
+          localStorage.setItem('userRole', user.role);
 
-        // FAIL-SAFE: If backend doesn't send the role, check the ID prefix!
-        if (!loggedInRole) {
-          if (loggedInId.startsWith('PT')) loggedInRole = 'Patient';
-          else if (loggedInId.startsWith('DR')) loggedInRole = 'Doctor';
-          else if (loggedInId.startsWith('HM')) loggedInRole = 'Manager';
-          else loggedInRole = role; // Fallback to current tab
+          toast.success(`Welcome back, ${user.name}!`);
+
+          if (user.role === 'Manager') navigate('/manager/dashboard');
+          else if (user.role === 'Doctor') navigate('/doctor/dashboard');
+          else navigate('/patient/dashboard');
         }
-
-        // SAVE ALL DATA SO DASHBOARDS WORK
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('userRole', loggedInRole);
-        localStorage.setItem('userName', backendData.name);
-        localStorage.setItem('userId', loggedInId);
-
-        toast.success(`Welcome ${backendData.name}!`);
-        
-        // REDIRECT SECURELY
-        const dashboardPaths = { 
-          Patient: '/patient/dashboard', 
-          Doctor: '/doctor/dashboard', 
-          Manager: '/manager/dashboard' 
-        };
-        
-        window.location.href = dashboardPaths[loggedInRole] || '/';
-
       } else {
-        // ==========================================
-        // REGISTRATION LOGIC
-        // ==========================================
         const formData = new FormData();
         formData.append('name', regData.name);
         formData.append('phone', regData.phone);
         formData.append('email', regData.email);
         formData.append('aadhar_number', regData.aadhar);
         formData.append('password', regData.password);
+
         if (files.photo) formData.append('photo', files.photo);
 
         let endpoint = '';
@@ -86,6 +78,7 @@ const LoginRegister = () => {
           if (files.aadharCard) formData.append('aadhar_card', files.aadharCard);
         } else if (role === 'Manager') {
           endpoint = '/manager/register';
+          if (files.aadharCard) formData.append('aadhar_card', files.aadharCard);
         } else if (role === 'Doctor') {
           endpoint = '/doctor/register';
           formData.append('department', regData.department);
@@ -100,99 +93,212 @@ const LoginRegister = () => {
         const generatedId = res.data.data.application_id || res.data.data.doctor_id || res.data.data.manager_id;
         
         toast.success(`Registration Successful! Your ID: ${generatedId}`);
-        setIsLogin(true); // Switch to login view
+        setIsLogin(true); 
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || err.response?.data?.error || "Action Failed");
+      const msg = err.response?.data?.message || err.response?.data?.error || "Action Failed. Verify credentials.";
+      toast.error(msg);
+    }
+  };
+
+  const handleResetSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('http://localhost:5000/api/auth/reset-password', {
+        email: resetData.email,
+        aadhar_number: resetData.aadhar,
+        newPassword: resetData.newPassword
+      });
+      if (res.data.success) {
+        toast.success("Password Updated Successfully!");
+        setIsForgot(false);
+        setIsLogin(true);
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || "Verification criteria mismatch.";
+      toast.error(msg);
     }
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card" ref={formContainerRef}>
-        <div className="auth-toggle">
-          <button type="button" className={isLogin ? 'active' : ''} onClick={() => setIsLogin(true)}>Login</button>
-          <button type="button" className={!isLogin ? 'active' : ''} onClick={() => setIsLogin(false)}>New Registration</button>
-        </div>
-
-        <div className="role-tabs">
-          {['Patient', 'Doctor', 'Manager'].map((r) => (
-            <button type="button" key={r} className={`tab-btn ${role === r ? 'active-tab' : ''}`} onClick={() => setRole(r)}>{r}</button>
-          ))}
-        </div>
-
-        <div className="auth-header">
-          <h2>{role} {isLogin ? 'Login' : 'Registration'}</h2>
-          <p>{isLogin ? 'Welcome back! Please enter your details.' : 'Create an account to get started.'}</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          {isLogin ? (
-            <>
-              <div className="form-group">
-                <label>Login ID ({role === 'Patient' ? 'PTXXXX' : role === 'Doctor' ? 'DRXXXX' : 'HMXXXX'})</label>
-                <input type="text" placeholder="Enter ID" required onChange={(e) => setLoginData({...loginData, login_id: e.target.value.toUpperCase()})} />
-              </div>
-              <div className="form-group">
-                <label>Password</label>
-                <input type="password" placeholder="Enter password" required onChange={(e) => setLoginData({...loginData, password: e.target.value})} />
-              </div>
-              <div className="forgot-password"><a href="#!">Forgot Password?</a></div>
-            </>
-          ) : (
-            <div className="register-grid">
-              <div className="form-group">
-                <label>Full Name</label>
-                <input type="text" value={regData.name} onChange={(e) => /^[a-zA-Z\s]*$/.test(e.target.value) && setRegData({...regData, name: e.target.value})} required />
-              </div>
-              
-              <div className="form-group">
-                <label>Phone Number</label>
-                <div className="phone-input-wrapper">
-                  <span className="country-code">+91</span>
-                  {/* Added value binding so letters are physically prevented from showing */}
-                  <input type="tel" value={regData.phone} maxLength="10" onChange={(e) => setRegData({...regData, phone: e.target.value.replace(/\D/g, '')})} required />
-                </div>
-              </div>
-              
-              <div className="form-group"><label>Email ID</label><input type="email" onChange={(e) => setRegData({...regData, email: e.target.value})} required /></div>
-              
-              <div className="form-group">
-                <label>Aadhar Number</label>
-                {/* 2. FIXED AADHAR NUMBER VALIDATION (Added value={regData.aadhar}) */}
-                <input type="text" value={regData.aadhar} maxLength="12" placeholder="12-digit number" onChange={(e) => setRegData({...regData, aadhar: e.target.value.replace(/\D/g, '')})} required />
-              </div>
-              
-              <div className="form-group"><label>Password</label><input type="password" onChange={(e) => setRegData({...regData, password: e.target.value})} required /></div>
-              <div className="form-group"><label>Upload Photo</label><input type="file" name="photo" accept="image/*" onChange={handleFileChange} required /></div>
-
-              {role === 'Doctor' && (
-                <>
-                  <div className="form-group">
-                    <label>Department</label>
-                    <select required onChange={(e) => setRegData({...regData, department: e.target.value})}>
-                      <option value="">Select</option>
-                      <option value="Cardiology">Cardiology</option>
-                      <option value="Neurology">Neurology</option>
-                      <option value="Orthopedics">Orthopedics</option>
-                      <option value="General">General Medicine</option>
-                    </select>
-                  </div>
-                  <div className="form-group"><label>Experience in years</label><input type="number" onChange={(e) => setRegData({...regData, experience: e.target.value})} required /></div>
-                  <div className="form-group"><label>State</label><input type="text" onChange={(e) => setRegData({...regData, state: e.target.value})} required /></div>
-                  <div className="form-group"><label>City</label><input type="text" onChange={(e) => setRegData({...regData, city: e.target.value})} required /></div>
-                  <div className="form-group"><label>Language</label><input type="text" onChange={(e) => setRegData({...regData, language: e.target.value})} required /></div>
-                  <div className="form-group"><label>Certified Proof</label><input type="file" name="proof" accept="image/*,.pdf" onChange={handleFileChange} required /></div>
-                </>
-              )}
-              
-              {(role === 'Patient' || role === 'Manager') && (
-                <div className="form-group"><label>Upload Aadhar Card</label><input type="file" name="aadharCard" accept="image/*,.pdf" onChange={handleFileChange} required /></div>
-              )}
+    <div className="auth-single-frame-wrapper">
+      <div className={`auth-split-layout-card ${!isLogin ? 'expand-width' : ''}`} ref={cardRef}>
+        
+        {/* INTERACTIVE FORM WORKSPACE */}
+        <div className="auth-form-workspace" ref={formWorkspaceRef}>
+          
+          {/* Top Toggle Switcher Nav Line */}
+          {!isForgot && (
+            <div className="compact-toggle-pill-bar">
+              <button type="button" className={`toggle-pill ${isLogin ? 'active' : ''}`} onClick={() => setIsLogin(true)}>Sign In</button>
+              <button type="button" className={`toggle-pill ${!isLogin ? 'active' : ''}`} onClick={() => setIsLogin(false)}>New Registration</button>
             </div>
           )}
-          <button type="submit" className="btn-submit">{isLogin ? 'Login' : 'Register'}</button>
-        </form>
+
+          {isForgot ? (
+            <div className="auth-step-node-form">
+              <div className="workspace-header-title">
+                <h3>Reset Password</h3>
+                <p>Verify data identity tokens to clear workspace restrictions.</p>
+              </div>
+              <form onSubmit={handleResetSubmit} className="workspace-compact-form">
+                <div className="form-group-compact">
+                  <label>Email Address</label>
+                  <input type="email" placeholder="name@example.com" required onChange={(e) => setResetData({...resetData, email: e.target.value})} />
+                </div>
+                <div className="form-group-compact">
+                  <label>Aadhar Number</label>
+                  <input type="text" maxLength="12" placeholder="12-digit structural code" required onChange={(e) => setResetData({...resetData, aadhar: e.target.value.replace(/\D/g, '')})} />
+                </div>
+                <div className="form-group-compact">
+                  <label>New Passkey Phrase</label>
+                  <input type="password" placeholder="Configure safe characters" required onChange={(e) => setResetData({...resetData, newPassword: e.target.value})} />
+                </div>
+                <div className="button-group-vertical-stack">
+                  <button type="submit" className="btn-action-submit-node">Update Credentials</button>
+                  <button type="button" className="btn-action-text-fallback" onClick={() => setIsForgot(false)}>Return to Account Login</button>
+                </div>
+              </form>
+            </div>
+          ) : (
+            <div className="auth-step-node-form">
+              {/* Role Context Selector Pills */}
+              <div className="role-pills-row">
+                {['Patient', 'Doctor', 'Manager'].map((r) => (
+                  <button type="button" key={r} className={`role-pill-btn ${role === r ? 'selected' : ''}`} onClick={() => setRole(r)}>{r}</button>
+                ))}
+              </div>
+
+              <div className="workspace-header-title">
+                <h3>{role} {isLogin ? 'Login' : 'Registration'}</h3>
+                <p>{isLogin ? 'Welcome back! Input your verification parameters.' : 'Provide required registry settings to generate an institutional profile.'}</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="workspace-compact-form">
+                {isLogin ? (
+                  <div className="login-vertical-input-stack">
+                    <div className="form-group-compact">
+                      <label>Login ID ({role === 'Patient' ? 'PTXXXX' : role === 'Doctor' ? 'DRXXXX' : 'HMXXXX'})</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. PT0001" 
+                        required 
+                        value={loginData.login_id} 
+                        onChange={(e) => setLoginData({...loginData, login_id: e.target.value.toUpperCase()})} 
+                      />
+                    </div>
+                    <div className="form-group-compact">
+                      <label>Password</label>
+                      <input 
+                        type="password" 
+                        placeholder="••••••••" 
+                        required 
+                        onChange={(e) => setLoginData({...loginData, password: e.target.value})} 
+                      />
+                    </div>
+                    <div className="forgot-password-link-alignment">
+                      <a href="#!" onClick={(e) => { e.preventDefault(); setIsForgot(true); }}>Forgot Password?</a>
+                    </div>
+                  </div>
+                ) : (
+                  /* HORIZONTAL COMPACT REGISTRATION FIELDS MATRIX */
+                  <div className={`registration-matrix-scroller ${role === 'Doctor' ? 'tall-scroller' : ''}`}>
+                    <div className="form-row-grid">
+                      <div className="form-group-compact">
+                        <label>Full Name</label>
+                        <input type="text" placeholder="Enter full name" value={regData.name} onChange={(e) => /^[a-zA-Z\s]*$/.test(e.target.value) && setRegData({...regData, name: e.target.value})} required />
+                      </div>
+                      <div className="form-group-compact">
+                        <label>Phone Contact</label>
+                        <div className="phone-wrapper-compact-node">
+                          <span className="prefix-tag">+91</span>
+                          <input type="tel" placeholder="10-digit number" value={regData.phone} maxLength="10" onChange={(e) => setRegData({...regData, phone: e.target.value.replace(/\D/g, '')})} required />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="form-row-grid">
+                      <div className="form-group-compact">
+                        <label>Email Address</label>
+                        <input type="email" placeholder="name@domain.com" required onChange={(e) => setRegData({...regData, email: e.target.value})} />
+                      </div>
+                      <div className="form-group-compact">
+                        <label>Aadhar Number</label>
+                        <input type="text" value={regData.aadhar} maxLength="12" placeholder="12-digit registry code" onChange={(e) => setRegData({...regData, aadhar: e.target.value.replace(/\D/g, '')})} required />
+                      </div>
+                    </div>
+
+                    <div className="form-row-grid">
+                      <div className="form-group-compact">
+                        <label>Create Password</label>
+                        <input type="password" placeholder="Minimum 6 marks" required onChange={(e) => setRegData({...regData, password: e.target.value})} />
+                      </div>
+                      <div className="form-group-compact">
+                        <label>Profile Photo</label>
+                        <input type="file" name="photo" accept="image/*" onChange={handleFileChange} required />
+                      </div>
+                    </div>
+
+                    {role === 'Doctor' && (
+                      <>
+                        <div className="form-row-grid">
+                          <div className="form-group-compact">
+                            <label>Care Track Line</label>
+                            <select required onChange={(e) => setRegData({...regData, department: e.target.value})}>
+                              <option value="">Select Specialization...</option>
+                              <option value="Cardiology">Cardiology</option>
+                              <option value="Neurology">Neurology</option>
+                              <option value="Orthopedics">Orthopedics</option>
+                              <option value="General Medicine">General Medicine</option>
+                            </select>
+                          </div>
+                          <div className="form-group-compact">
+                            <label>Experience Duration</label>
+                            <input type="number" min="0" placeholder="Years count" required onChange={(e) => setRegData({...regData, experience: e.target.value})} />
+                          </div>
+                        </div>
+
+                        <div className="form-row-grid">
+                          <div className="form-group-compact">
+                            <label>State Domain</label>
+                            <input type="text" placeholder="e.g. Odisha" required onChange={(e) => setRegData({...regData, state: e.target.value})} />
+                          </div>
+                          <div className="form-group-compact">
+                            <label>City Hub</label>
+                            <input type="text" placeholder="e.g. Bhubaneswar" required onChange={(e) => setRegData({...regData, city: e.target.value})} />
+                          </div>
+                        </div>
+
+                        <div className="form-row-grid">
+                          <div className="form-group-compact">
+                            <label>Communication Dialect</label>
+                            <input type="text" placeholder="e.g. Odia, English" required onChange={(e) => setRegData({...regData, language: e.target.value})} />
+                          </div>
+                          <div className="form-group-compact">
+                            <label>Certified Proof Log</label>
+                            <input type="file" name="proof" accept="image/*,.pdf" onChange={handleFileChange} required />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    
+                    {(role === 'Patient' || role === 'Manager') && (
+                      <div className="form-group-compact">
+                        <label>Aadhar Document Scan</label>
+                        <input type="file" name="aadharCard" accept="image/*,.pdf" onChange={handleFileChange} required />
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                <button type="submit" className="btn-action-submit-node">
+                  {isLogin ? 'Login 🔑' : 'Register ⚡'}
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );

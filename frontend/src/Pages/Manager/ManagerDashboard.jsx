@@ -2,13 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import EditProfileComp from '../../Components/EditProfileComp';
 import './ManagerDashboard.css';
 
 const ManagerDashboard = () => {
   const [activeTab, setActiveTab] = useState('Overview');
   const [stats, setStats] = useState(null);
   const [doctors, setDoctors] = useState([]);
+  const [managerProfile, setManagerProfile] = useState({ name: '', email: '', phone: '', photo: '' });
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false); // Controls view state toggling
   
   const navigate = useNavigate();
   const contentRef = useRef(null);
@@ -22,7 +25,6 @@ const ManagerDashboard = () => {
           return;
         }
 
-        // Fetch Stats and Full Doctor List
         const [statsRes, docsRes] = await Promise.all([
           axios.get('http://localhost:5000/api/admin/stats'),
           axios.get('http://localhost:5000/api/doctor')
@@ -30,6 +32,14 @@ const ManagerDashboard = () => {
 
         setStats(statsRes.data.data);
         setDoctors(docsRes.data.data);
+        
+        setManagerProfile({
+          name: localStorage.getItem('userName') || 'HMS Administrator',
+          email: 'admin@hms.com', 
+          phone: '9999999999',
+          photo: '' 
+        });
+
         setIsLoading(false);
       } catch (err) {
         console.error("Failed to load manager data:", err);
@@ -65,8 +75,10 @@ const ManagerDashboard = () => {
           <p>ID: {localStorage.getItem('userId')}</p>
         </div>
         <ul className="sidebar-menu">
-          <li className={activeTab === 'Overview' ? 'active' : ''} onClick={() => setActiveTab('Overview')}>Hospital Stats</li>
-          <li className={activeTab === 'Doctors' ? 'active' : ''} onClick={() => setActiveTab('Doctors')}>Manage Doctors</li>
+          <li className={activeTab === 'Overview' ? 'active' : ''} onClick={() => { setActiveTab('Overview'); setIsEditing(false); }}>Hospital Stats</li>
+          <li className={activeTab === 'Doctors' ? 'active' : ''} onClick={() => { setActiveTab('Doctors'); setIsEditing(false); }}>Manage Doctors</li>
+          <li className={activeTab === 'Profile' ? 'active' : ''} onClick={() => { setActiveTab('Profile'); setIsEditing(false); }}>My Profile</li>
+          <li className={activeTab === 'Schedule' ? 'active' : ''} onClick={() => navigate('/manager/schedule')}>📅Doctor Schedules</li> 
           <li className="logout-btn" onClick={() => { localStorage.clear(); window.location.href = '/'; }}>Logout</li>
         </ul>
       </aside>
@@ -158,6 +170,36 @@ const ManagerDashboard = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {activeTab === 'Profile' && (
+          <div className="manager-profile-tab-section">
+            <div className="profile-section-header">
+              <h2>Manager Profile Settings</h2>
+              {!isEditing && <button className="btn-corner-edit" onClick={() => setIsEditing(true)}>✏️ Edit Profile</button>}
+            </div>
+
+            {!isEditing ? (
+              <div className="dash-card profile-details-card">
+                <div className="profile-details-grid">
+                  <div><h4 className="detail-label">Administrative Operator</h4><p className="detail-value">{managerProfile.name}</p></div>
+                  <div><h4 className="detail-label">System Node Communication Email</h4><p className="detail-value">{managerProfile.email}</p></div>
+                  <div><h4 className="detail-label">Secure Access Key ID</h4><p className="detail-value">{localStorage.getItem('userId')}</p></div>
+                  <div><h4 className="detail-label">Phone Endpoint</h4><p className="detail-value">+91 {managerProfile.phone}</p></div>
+                </div>
+              </div>
+            ) : (
+              <EditProfileComp 
+                initialData={managerProfile}
+                role="Manager"
+                onCancel={() => setIsEditing(false)}
+                onUpdateSuccess={(updatedFields) => {
+                  setManagerProfile({ ...managerProfile, ...updatedFields });
+                  setIsEditing(false);
+                }}
+              />
+            )}
           </div>
         )}
       </main>

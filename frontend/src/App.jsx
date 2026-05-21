@@ -6,18 +6,22 @@ import 'react-toastify/dist/ReactToastify.css'; // ✅ REQUIRED FOR TOAST STYLES
 // Components
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer'; 
+import Videoss from './Pages/Public/videoss'
 import Home from './Pages/Public/Home';
 import CertifiedExcellence from './Pages/Public/CertifiedExcellence'; 
 import LoginRegister from './Pages/Public/LoginRegister';
 import PublicSchedule from './Pages/Public/PublicSchedule';
 import Contact from './Pages/Public/Contact'; // ✅ IMPORTED CONTACT PAGE
 
+// Patient Dashboards
 import BookAppointment from './Pages/Patient/BookAppointment';
 import PatientDashboard from './Pages/Patient/PatientDashboard';
 
+// Doctor Dashboards
 import DoctorDashboard from './Pages/Doctor/DoctorDashboard';
 import PatientQueue from './Pages/Doctor/PatientQueue';
 
+// Manager Dashboards
 import ManagerDashboard from './Pages/Manager/ManagerDashboard';
 import ManageSchedule from './Pages/Manager/ManageSchedule';
 
@@ -40,6 +44,7 @@ function App() {
             path="/" 
             element={
               <>
+                <Videoss/>
                 <Home />
                 <CertifiedExcellence />
               </>
@@ -48,8 +53,8 @@ function App() {
           
           {/* Public Routes */}
           <Route path="/login" element={<LoginRegister />} />
-          <Route path="/schedule" element={<PublicSchedule />} />
-          <Route path="/contact" element={<Contact />} /> {/* ✅ ADDED CONTACT ROUTE */}
+          <Route path="/doctors" element={<PublicSchedule />} /> {/* ✅ MATCHES NAVBAR ROUTE */}
+          <Route path="/contact" element={<Contact />} /> {/* ✅ ACCESSIBLE PUBLIC CONTACT ROUTE */}
           
           {/* Patient Routes */}
           <Route path="/appointment" element={<BookAppointment />} />

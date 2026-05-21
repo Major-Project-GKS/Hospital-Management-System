@@ -25,8 +25,9 @@ body {
   overflow-x: hidden; 
 }
 
+/* Global Reset to eliminate browser text lines */
 a {
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 /* =========================================
@@ -38,8 +39,8 @@ a {
   left: 0;
   width: 100vw;
   height: var(--nav-height);
-  background-color: rgba(255, 255, 255, 0.95); /* Slight transparency for a modern feel */
-  backdrop-filter: blur(10px); /* Blurs content behind the navbar */
+  background-color: rgba(255, 255, 255, 0.95); 
+  backdrop-filter: blur(10px); 
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -56,43 +57,10 @@ a {
   cursor: pointer;
 }
 
-.brand-icon {
-  width: 50px;
-  height: 50px;
-  background-color: var(--theme-green-light);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid var(--theme-green);
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Hover: Logo Spin/Scale effect */
-.nav-brand:hover .brand-icon {
-  transform: rotate(15deg) scale(1.05);
-  box-shadow: 0 4px 12px var(--theme-green-glow);
-}
-
-.brand-text a {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-text h1 {
-  color: var(--theme-green);
-  font-size: 1.6rem;
-  font-weight: 800;
-  margin: 0;
-  line-height: 1.1;
-  letter-spacing: 0.5px;
-}
-
-.brand-text p {
-  color: var(--text-gray);
-  font-size: 0.85rem;
-  margin: 0;
-  font-weight: 500;
+.brand-link-reset {
+  text-decoration: none !important;
+  display: inline-block;
+  line-height: 0;
 }
 
 /* --- CENTER: PILL MENU --- */
@@ -116,27 +84,31 @@ a {
   position: relative;
 }
 
-.nav-menu a {
+/* Explicit enforcement targeting anchor tags inside lists */
+.nav-menu li a.menu-link-item {
   display: inline-block;
   padding: 0.6rem 1.5rem;
-  color: var(--text-dark-blue);
+  color: var(--text-dark-blue) !important;
   font-weight: 600;
   font-size: 0.95rem;
   border-radius: 40px;
+  text-decoration: none !important; /* Forces removal of underlines */
   transition: all 0.3s ease;
 }
 
 /* Hover: Soft pill background */
-.nav-menu a:hover {
-  color: var(--theme-green);
+.nav-menu li a.menu-link-item:hover {
+  color: var(--theme-green) !important;
   background-color: var(--theme-green-light);
+  text-decoration: none !important;
 }
 
-/* Active State */
-.nav-menu li.active a {
-  color: var(--theme-green);
+/* Active State Styles */
+.nav-menu li.active a.menu-link-item {
+  color: var(--theme-green) !important;
   background-color: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-decoration: none !important;
 }
 
 .nav-menu li.active::after {
@@ -166,7 +138,8 @@ a {
   border-radius: 50px;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy hover transition */
+  text-decoration: none !important; /* Erases underline from actions column buttons */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
 }
 
 /* Hover: Outline Button */
@@ -193,7 +166,7 @@ a {
 
 .btn-solid:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.5); /* Stronger glow on hover */
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.5); 
   background: linear-gradient(135deg, #059669, #047857);
 }
 
@@ -202,18 +175,16 @@ a {
   .nav-menu-container { display: none; } 
   .nav-actions span { display: none; } 
   .nav-brand { gap: 8px; }
-  .brand-text h1 { font-size: 1.3rem; }
 }
 
 /* --- CUSTOM LOGO STYLES --- */
 .nav-logo-img {
-  height: 55px; /* Adjust this to make your logo bigger or smaller */
+  height: 55px; 
   width: auto;
   object-fit: contain;
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Adds a nice subtle bounce scale when you hover over your logo */
 .nav-brand:hover .nav-logo-img {
   transform: scale(1.05);
 }
