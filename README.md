@@ -1,33 +1,35 @@
-# Hospital-Management-System
 # 🏥 Hospital Management System (HMS)
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)[cite: 2]
+![Version](https://img.shields.io/badge/version-1.0.0-blue)[cite: 2]
+![License](https://img.shields.io/badge/license-MIT-green)[cite: 2]
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
 
-A full-stack Hospital Management System designed to streamline hospital administration, patient admissions, doctor allocations, appointment scheduling, and electronic medical records.
+A modern full-stack Hospital Management Web Application built with React, Vite, Express, and MongoDB. The system streamlines patient registrations, user authentication, doctor-patient appointment booking across various departments, and direct messaging with hospital administration.
 
 ---
 
 ## 📌 Quick Links
 
-* [API Documentation](#-api-endpoints)
-* [Local Setup](#-local-development)
+* [Key Features](#-key-features)
 * [Tech Stack](#-tech-stack)
 * [Project Structure](#-project-structure)
-* [Contributing Guidelines](#-contributing)
+* [Hospital Departments](#-hospital-departments)
+* [Local Development](#-local-development)
+* [API Endpoints](#-api-endpoints)
+* [Contributing](#-contributing)
+* [License](#-license)
 
 ---
 
 ## ✨ Key Features
 
-* ✅ **Patient Management:** Complete lifecycle handling including registration, discharge, and medical histories.
-* ✅ **Doctor Portal:** Shift allocations, specialization tracking, and dedicated patient queues.
-* ✅ **Appointment Scheduling:** Real-time booking slots with automatic conflict detection.
-* ✅ **Medical Billing:** Invoicing, treatment fee calculations, and payment tracking.
-* ✅ **Role-Based Access Control (RBAC):** Distinct permissions for Admins, Doctors, Receptionists, and Patients.
-* ✅ **Responsive Dashboard:** Built with React and Vite for sub-second page transitions.
+* 🔐 **Authentication System:** Secure patient/user registration and login powered by JWT and cookies.
+* 📅 **Appointment Booking:** Interactive appointment scheduling form allowing patients to select specific doctors, departments, and time slots.
+* 🏥 **Department Directory:** Browse clinical departments (Cardiology, Dermatology, Neurology, Oncology, Orthopedics, Pediatrics, Radiology, etc.).
+* 💬 **Contact & Message Center:** Direct inquiry and message dispatch to hospital administrators via `MessageForm`.
+* 📱 **Responsive UI:** Built with Vite and React using responsive layouts and `react-multi-carousel` for smooth interactive displays.
+* 🔔 **Instant Feedback:** Toast notifications integrated across forms using `react-toastify`.
 
 ---
 
@@ -35,12 +37,14 @@ A full-stack Hospital Management System designed to streamline hospital administ
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Frontend** | React.js, Vite | UI Rendering & Single-Page Application (SPA) |
-| **Styling** | React-Bootstrap, Custom CSS | Modern UI components and responsive styling |
-| **Backend** | Node.js, Express.js | REST API services and request handling |
-| **Database** | MongoDB / MySQL | Secure storage for patient and clinical data |
-| **Authentication** | JWT, bcrypt | Session tokens and password hashing |
-| **Network Client** | Axios | Frontend-to-backend API communication |
+| **Frontend Framework** | React.js (v18+) | Component-driven Single-Page Application (SPA) |
+| **Build Tool** | Vite | Lightning-fast development server and optimized bundler |
+| **Routing** | React Router DOM | Client-side page navigation |
+| **UI Components** | React Icons, React Multi Carousel | Icons and responsive department carousels |
+| **Alerts & Modals** | React-Toastify | Client notifications and feedback |
+| **HTTP Client** | Axios | Frontend-to-backend API communication |
+| **Backend (Server)** | Node.js, Express.js | REST API routing and business logic |
+| **Database** | MongoDB & Mongoose | Document storage for users, messages, and appointments |
 
 ---
 
@@ -49,23 +53,41 @@ A full-stack Hospital Management System designed to streamline hospital administ
 ```text
 Hospital-Management-System/
 ├── backend/
-│   ├── src/
-│   │   ├── config/          # Database connection files
-│   │   ├── controllers/     # Business logic for routes
-│   │   ├── middleware/      # Auth & validation checks
-│   │   ├── models/          # Database schemas
-│   │   ├── routes/          # Express route definitions
-│   │   └── server.js        # Main server entry point
-│   ├── .env.example         # Template for environment variables
-│   └── package.json
-├── frontend/
-│   ├── public/              # Static assets & favicon
-│   ├── src/
-│   │   ├── assets/          # Project images & icons
-│   │   ├── components/      # Reusable UI widgets
-│   │   ├── pages/           # View layouts (Doctors, Patients, etc.)
-│   │   ├── App.jsx          # Route declarations
-│   │   └── main.jsx         # Vite root mount
-│   ├── vite.config.js       # Vite bundler configurations
-│   └── package.json
-└── README.md
+│   ├── config/              # DB connection config
+│   ├── controllers/         # Business logic (user, appointment, message)
+│   ├── middlewares/         # Auth, error handling, catchAsyncErrors
+│   ├── models/              # Mongoose schemas (User, Appointment, Message)
+│   ├── router/              # Express API routes
+│   ├── server.js            # Server entry point
+│   ├── package.json
+│   └── .env
+│
+└── frontend/
+    ├── public/              # Static branding and department images
+    │   ├── departments/     # cardio.jpg, neuro.jpg, ortho.jpg, etc.
+    │   ├── about.png
+    │   ├── contact.png
+    │   ├── hero.png
+    │   ├── logo.png
+    │   ├── signin.png
+    │   └── signupheader.png
+    ├── src/
+    │   ├── components/      # Reusable UI components
+    │   │   ├── AppointmentForm.jsx
+    │   │   ├── Biography.jsx
+    │   │   ├── Departments.jsx
+    │   │   ├── Footer.jsx
+    │   │   ├── Hero.jsx
+    │   │   ├── MessageForm.jsx
+    │   │   └── Navbar.jsx
+    │   ├── Pages/           # Application views
+    │   │   ├── AboutUs.jsx
+    │   │   ├── Appointment.jsx
+    │   │   ├── Home.jsx
+    │   │   ├── Login.jsx
+    │   │   └── Register.jsx
+    │   ├── App.css
+    │   ├── App.jsx          # Route configuration
+    │   └── main.jsx         # Vite entry point
+    ├── vite.config.js
+    └── package.json
