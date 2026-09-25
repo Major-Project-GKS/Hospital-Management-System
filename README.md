@@ -52,42 +52,100 @@ A modern full-stack Hospital Management Web Application built with React, Vite, 
 
 ```text
 Hospital-Management-System/
-├── backend/
-│   ├── config/              # DB connection config
-│   ├── controllers/         # Business logic (user, appointment, message)
-│   ├── middlewares/         # Auth, error handling, catchAsyncErrors
-│   ├── models/              # Mongoose schemas (User, Appointment, Message)
-│   ├── router/              # Express API routes
-│   ├── server.js            # Server entry point
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── Components/
+│   │   │   ├── EditProfileComp.css
+│   │   │   ├── EditProfileComp.jsx
+│   │   │   ├── Footer.css
+│   │   │   ├── Footer.jsx
+│   │   │   ├── Navbar.css
+│   │   │   └── Navbar.jsx
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+│   │   ├── Pages/
+│   │   │   ├── Doctor/
+│   │   │   │   ├── DoctorDashboard.css
+│   │   │   │   ├── DoctorDashboard.jsx
+│   │   │   │   ├── PatientQueue.css
+│   │   │   │   └── PatientQueue.jsx
+│   │   │   ├── Manager/
+│   │   │   │   ├── ManagerDashboard.css
+│   │   │   │   ├── ManagerDashboard.jsx
+│   │   │   │   ├── ManageSchedule.css
+│   │   │   │   └── ManageSchedule.jsx
+│   │   │   ├── Patient/
+│   │   │   │   ├── BookAppointment.css
+│   │   │   │   ├── BookAppointment.jsx
+│   │   │   │   ├── PatientDashboard.css
+│   │   │   │   └── PatientDashboard.jsx
+│   │   │   └── Public/
+│   │   │       ├── CertifiedExcellence.css
+│   │   │       ├── CertifiedExcellence.jsx
+│   │   │       ├── Contact.css
+│   │   │       ├── Contact.jsx
+│   │   │       ├── Home.css
+│   │   │       ├── Home.jsx
+│   │   │       ├── LoginRegister.css
+│   │   │       ├── LoginRegister.jsx
+│   │   │       ├── PublicSchedule.css
+│   │   │       ├── PublicSchedule.jsx
+│   │   │       ├── videoss.css
+│   │   │       └── videoss.jsx
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
 │   ├── package.json
-│   └── .env
+│   ├── README.md
+│   └── vite.config.js
 │
-└── frontend/
-    ├── public/              # Static branding and department images
-    │   ├── departments/     # cardio.jpg, neuro.jpg, ortho.jpg, etc.
-    │   ├── about.png
-    │   ├── contact.png
-    │   ├── hero.png
-    │   ├── logo.png
-    │   ├── signin.png
-    │   └── signupheader.png
-    ├── src/
-    │   ├── components/      # Reusable UI components
-    │   │   ├── AppointmentForm.jsx
-    │   │   ├── Biography.jsx
-    │   │   ├── Departments.jsx
-    │   │   ├── Footer.jsx
-    │   │   ├── Hero.jsx
-    │   │   ├── MessageForm.jsx
-    │   │   └── Navbar.jsx
-    │   ├── Pages/           # Application views
-    │   │   ├── AboutUs.jsx
-    │   │   ├── Appointment.jsx
-    │   │   ├── Home.jsx
-    │   │   ├── Login.jsx
-    │   │   └── Register.jsx
-    │   ├── App.css
-    │   ├── App.jsx          # Route configuration
-    │   └── main.jsx         # Vite entry point
-    ├── vite.config.js
-    └── package.json
+├── hospital-management-system-backend/
+│   ├── config/
+│   │   └── db.js
+│   ├── controllers/
+│   │   ├── adminController.js
+│   │   ├── appointmentController.js
+│   │   ├── authController.js
+│   │   ├── doctorController.js
+│   │   ├── managerController.js
+│   │   ├── patientController.js
+│   │   ├── prescriptionController.js
+│   │   ├── profileController.js
+│   │   └── scheduleController.js
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   └── upload.js
+│   ├── models/
+│   │   ├── appointmentModel.js
+│   │   ├── counterModel.js
+│   │   ├── doctorModel.js
+│   │   ├── managerModel.js
+│   │   ├── patientModel.js
+│   │   ├── prescriptionModel.js
+│   │   └── scheduleModel.js
+│   ├── routes/
+│   │   ├── adminRoutes.js
+│   │   ├── appointmentRoutes.js
+│   │   ├── authRoutes.js
+│   │   ├── doctorRoutes.js
+│   │   ├── managerRoutes.js
+│   │   ├── patientRoutes.js
+│   │   ├── prescriptionRoutes.js
+│   │   └── profileRoutes.js
+│   ├── uploads/
+│   ├── .env
+│   ├── .gitignore
+│   ├── index.js
+│   ├── package-lock.json
+│   ├── package.json
+│   └── vercel.json
+│
+└── README.md
+```[cite: 3, 4, 5]
