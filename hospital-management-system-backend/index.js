@@ -10,18 +10,34 @@ connectDB();
 const app = express();
 
 // ==========================================
-// MIDDLEWARE (UPDATED WITH ADVANCED CORS PATH LABELS) ✅
+// MIDDLEWARE (UPDATED FOR PRODUCTION & LOCAL CORS) ✅
 // ==========================================
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL // Will hold your future frontend Render URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: "http://localhost:5173", // Points directly to your frontend Vite dev node
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or Render health checks)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    // Allow any onrender.com preview domains for ease of deployment
+    if (origin.endsWith('.onrender.com')) {
+      return callback(null, true);
+    }
+    return callback(new Error('Blocked by CORS'));
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true })); 
 
-// Serving static uploads (Photos, Aadhar PDFs, Proofs)
+// Serving static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ==========================================
@@ -65,11 +81,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Something went wrong on the server!' });
 });
 
+// ==========================================
+// SERVER INITIALIZATION (BOUND TO 0.0.0.0 FOR RENDER) ✅
+// ==========================================
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server started on port ${PORT}`);
-  console.log(`📂 Uploads accessible at http://localhost:${PORT}/uploads`);
   console.log(`📅 Appointment system active at /api/appointment`);
   console.log(`💊 Prescription system active at /api/prescription`);
   console.log(`⚙️  Profile customization engine active at /api/profile`);
