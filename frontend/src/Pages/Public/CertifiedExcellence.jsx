@@ -2,39 +2,39 @@
 import React from 'react';
 import './CertifiedExcellence.css';
 
-// Importing logo images from src/assets
-import GovtLogo from '../../../src/assets/Govt.WEBP';
-import NABHLogo from '../../../src/assets/NABH.WEBP';
-import MedicalCouncilLogo from '../../../src/assets/Medicalcouncil.WEBP';
-import QualityHealthcareLogo from '../../../src/assets/Qua.WEBP';
-import ParamedicalCouncilLogo from '../../../src/assets/Paramedical.WEBP';
+// Importing logo images with correct relative paths
+import GovtLogo from '../../assets/Govt.webp';
+import NABHLogo from '../../assets/NABH.webp';
+import MedicalCouncilLogo from '../../assets/Medicalcouncil.webp';
+import QualityHealthcareLogo from '../../assets/Qua.webp';
+import ParamedicalCouncilLogo from '../../assets/Paramedical.webp';
 
 const CertifiedExcellence = () => {
   // Define data for the logos to be scrolled
   const logos = [
     {
       imgSrc: GovtLogo,
-      text: 'Medical Commission', // Verbatim caption from image
+      text: 'Medical Commission',
     },
     {
       imgSrc: NABHLogo,
-      text: 'NABH Accredited', // Verbatim caption from image
+      text: 'NABH Accredited',
     },
     {
       imgSrc: MedicalCouncilLogo,
-      text: 'Government Approved', // Verbatim caption from image
+      text: 'Government Approved',
     },
     {
       imgSrc: QualityHealthcareLogo,
-      text: 'Medical Council', // Verbatim caption from image
+      text: 'Medical Council',
     },
     {
       imgSrc: ParamedicalCouncilLogo,
-      text: 'Quality Healthcare', // Verbatim caption from image
+      text: 'Quality Healthcare',
     },
     {
-        imgSrc: ParamedicalCouncilLogo, // Duplicate for spacing/pattern, can replace with actual 'Paramedical Council' if file exists
-        text: 'Paramedical Council', // Verbatim caption from image
+      imgSrc: ParamedicalCouncilLogo,
+      text: 'Paramedical Council',
     }
   ];
 
@@ -46,7 +46,6 @@ const CertifiedExcellence = () => {
       {/* Header Section */}
       <div className="header-container">
         <div className="title-section">
-          {/* Flanking lines with stylized pattern */}
           <div className="line-container">
             <div className="dash dash-left"></div>
             <div className="long-line"></div>
@@ -64,7 +63,6 @@ const CertifiedExcellence = () => {
         <p className="subtitle">
           Government recognized and internationally accredited healthcare standards
         </p>
-        {/* Officially Certified Badge */}
         <div className="officially-certified">
           <span className="certified-text">
             <span className="dot"></span>OFFICIALLY CERTIFIED
