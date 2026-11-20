@@ -1,12 +1,12 @@
-// src/components/CertifiedExcellence.jsx
+// src/Pages/Public/CertifiedExcellence.jsx
 import React from 'react';
 import './CertifiedExcellence.css';
 
-// Importing logo images with correct relative paths
+// Importing logo images with exact case-sensitive paths
 import GovtLogo from '../../assets/Govt.webp';
 import NABHLogo from '../../assets/NABH.webp';
 import MedicalCouncilLogo from '../../assets/Medicalcouncil.webp';
-import QualityHealthcareLogo from '../../assets/Qua.webp';
+import QualityHealthcareLogo from '../../assets/Qua.WEBP';
 import ParamedicalCouncilLogo from '../../assets/Paramedical.webp';
 
 const CertifiedExcellence = () => {
@@ -35,7 +35,7 @@ const CertifiedExcellence = () => {
     {
       imgSrc: ParamedicalCouncilLogo,
       text: 'Paramedical Council',
-    }
+    },
   ];
 
   // Duplicate the logos to create a seamless looping scroll
