@@ -6,7 +6,7 @@ import './CertifiedExcellence.css';
 import GovtLogo from '../../assets/Govt.webp';
 import NABHLogo from '../../assets/NABH.webp';
 import MedicalCouncilLogo from '../../assets/Medicalcouncil.webp';
-import QualityHealthcareLogo from '../../assets/Qua.WEBP';
+import QualityHealthcareLogo from '../../assets/qua.WEBP';
 import ParamedicalCouncilLogo from '../../assets/Paramedical.webp';
 
 const CertifiedExcellence = () => {
