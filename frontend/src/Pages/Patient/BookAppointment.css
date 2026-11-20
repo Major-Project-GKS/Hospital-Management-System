@@ -226,11 +226,10 @@
     color: #475569;
 }
 
-.doc-meta-left <small> {
+.doc-meta-left small {
     color: #94a3b8;
     font-size: 0.78rem;
 }
-
 .fee-token {
     font-weight: 700;
     color: #059669;
