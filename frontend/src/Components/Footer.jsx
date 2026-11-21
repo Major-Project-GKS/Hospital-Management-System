@@ -13,6 +13,10 @@ const Footer = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleQuickLinkClick = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  };
+
   return (
     <footer className="footer-wrapper">
       
@@ -51,27 +55,22 @@ const Footer = () => {
           <h4>Quick Links</h4>
           <ul>
             <li>
-              <Link to="/">
+              <Link to="/" onClick={handleQuickLinkClick}>
                 <span className="icon-circle-small"><ArrowRight size={14} /></span> Home
               </Link>
             </li>
             <li>
-              <Link to="/schedule">
+              <Link to="/doctors" onClick={handleQuickLinkClick}>
                 <span className="icon-circle-small"><ArrowRight size={14} /></span> Doctors
               </Link>
             </li>
-            {/* <li>
-              <Link to="#services">
-                <span className="icon-circle-small"><ArrowRight size={14} /></span> Services
-              </Link>
-            </li> */}
-            <li >
-              <Link to="/Contact">
+            <li>
+              <Link to="/contact" onClick={handleQuickLinkClick}>
                 <span className="icon-circle-small"><ArrowRight size={14} /></span> Contact
               </Link>
             </li>
             <li>
-              <Link to="/appointment">
+              <Link to="/appointment" onClick={handleQuickLinkClick}>
                 <span className="icon-circle-small"><ArrowRight size={14} /></span> Appointments
               </Link>
             </li>
@@ -101,7 +100,6 @@ const Footer = () => {
             </button>
           </div>
           <div className="social-icons">
-            {/* Using the newly imported react-icons here */}
             <a href="#!"><FiFacebook size={20} /></a>
             <a href="#!"><FiTwitter size={20} /></a>
             <a href="#!"><FiInstagram size={20} /></a>
