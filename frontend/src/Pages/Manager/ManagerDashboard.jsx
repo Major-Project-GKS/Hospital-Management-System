@@ -9,6 +9,12 @@ import './ManagerDashboard.css';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const UPLOADS_URL = `${API_BASE_URL}/uploads/`;
 
+const getPhotoSrc = (photo) => {
+  if (!photo) return null;
+  if (photo.startsWith('data:') || photo.startsWith('http')) return photo;
+  return `${UPLOADS_URL}${photo}`;
+};
+
 const ManagerDashboard = () => {
   const [activeTab, setActiveTab] = useState('Overview');
   const [stats, setStats] = useState(null);
@@ -16,6 +22,7 @@ const ManagerDashboard = () => {
   const [managerProfile, setManagerProfile] = useState({ name: '', email: '', phone: '', photo: '' });
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const navigate = useNavigate();
   const contentRef = useRef(null);
@@ -74,17 +81,20 @@ const ManagerDashboard = () => {
     );
   }
 
+  const photoSrc = getPhotoSrc(managerProfile.photo);
+
   return (
     <div className="manager-dashboard">
       {/* Sidebar */}
       <aside className="manager-sidebar">
         <div className="admin-brand">
           <div className="brand-icon">
-            {managerProfile.photo ? (
+            {photoSrc && !imgError ? (
               <img
-                src={`${UPLOADS_URL}${managerProfile.photo}`}
+                src={photoSrc}
                 alt={managerProfile.name}
                 className="sidebar-profile-photo"
+                onError={() => setImgError(true)}
               />
             ) : (
               '🏥'
@@ -273,7 +283,10 @@ const ManagerDashboard = () => {
                 role="Manager"
                 onCancel={() => setIsEditing(false)}
                 onUpdateSuccess={(updatedFields) => {
-                  if (updatedFields.photo) localStorage.setItem('userPhoto', updatedFields.photo);
+                  if (updatedFields.photo) {
+                    localStorage.setItem('userPhoto', updatedFields.photo);
+                    setImgError(false);
+                  }
                   if (updatedFields.name) localStorage.setItem('userName', updatedFields.name);
                   if (updatedFields.email) localStorage.setItem('userEmail', updatedFields.email);
                   if (updatedFields.phone) localStorage.setItem('userPhone', updatedFields.phone);
