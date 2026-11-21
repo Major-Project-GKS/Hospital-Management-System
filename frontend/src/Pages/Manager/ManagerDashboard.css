@@ -3,7 +3,7 @@
     display: flex; 
     height: 100vh; 
     width: 100%;
-    background: #f0f4f9; /* Changed from bright blue to soft professional grey */
+    background: #f0f4f9;
     overflow: hidden;
 }
 
@@ -15,19 +15,45 @@
     padding: 25px; 
     display: flex;
     flex-direction: column;
-    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .admin-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 35px;
+    width: 100%;
 }
 
 .brand-icon {
     font-size: 40px;
-    margin-left: 80px;
-    margin-bottom: 10px;
-    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px auto;
+}
+
+.admin-brand h3 {
+    margin: 0 0 4px 0;
+}
+
+.admin-brand p {
+    margin: 0;
+    opacity: 0.85;
+    font-size: 0.9rem;
+}
+
+.sidebar-profile-photo {
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ffffff;
+    display: block;
+    margin: 0 auto;
 }
 
 .sidebar-menu {
@@ -91,7 +117,7 @@
 
 .stat-card .icon {
     font-size: 35px;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     padding: 15px;
     border-radius: 12px;
 }
@@ -142,27 +168,30 @@
 }
 
 .status-pill.waiting { background: #fef3c7; color: #92400e; }
+.status-pill.hold { background: #ede9fe; color: #5b21b6; }
 .status-pill.completed { background: #d1fae5; color: #065f46; }
-/* PatientDashboard.css / DoctorDashboard.css / ManagerDashboard.css */
+.status-pill.absent { background: #ffe4e6; color: #9f1239; }
 
-.patient-loading-screen {
+/* Profile & Utility Styles */
+.loading-screen {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-.sidebar-profile-photo {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
+.profile-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .profile-details-card {
+    background: white;
     margin-top: 20px;
     padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .profile-details-grid {
@@ -179,89 +208,6 @@
 .detail-value {
     font-size: 1.1rem;
     font-weight: bold;
-}
-
-.section-divider {
-    margin: 30px 0;
-    border: none;
-    border-top: 1px solid #eee;
-}
-
-.docs-label {
-    margin-bottom: 15px;
-}
-
-.document-btn {
-    display: inline-block;
-    width: auto;
-}
-
-.empty-state-container {
-    text-align: center;
-    padding: 20px 0;
-}
-
-.quick-book-link {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.prescription-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.diagnosis-title {
-    margin: 0 0 5px 0;
-    color: #2c3e50;
-}
-
-.doctor-meta {
+    color: #1e293b;
     margin: 0;
-    font-size: 0.9rem;
-    color: #7f8c8d;
-}
-
-.medicine-summary-box {
-    margin-top: 15px;
-}
-
-.medicines-heading {
-    margin: 0 0 5px 0;
-    font-size: 0.9rem;
-    color: #7f8c8d;
-}
-
-.medicines-list {
-    padding-left: 20px;
-    margin: 0;
-    font-size: 0.9rem;
-}
-
-.advice-summary-box {
-    margin-top: 10px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 5px;
-    font-size: 0.85rem;
-}
-
-.static-status-text {
-    font-size: 0.9rem;
-    font-weight: bold;
-}
-
-.static-status-text.completed {
-    color: #059669;
-}
-
-.static-status-text.absent {
-    color: #e11d48;
-}
-
-.empty-table-text {
-    text-align: center;
-    padding: 20px;
 }

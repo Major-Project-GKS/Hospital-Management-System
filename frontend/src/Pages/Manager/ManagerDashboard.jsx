@@ -1,3 +1,4 @@
+// src/Pages/Manager/ManagerDashboard.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import axios from 'axios';
@@ -5,14 +6,17 @@ import { useNavigate } from 'react-router-dom';
 import EditProfileComp from '../../Components/EditProfileComp';
 import './ManagerDashboard.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const UPLOADS_URL = `${API_BASE_URL}/uploads/`;
+
 const ManagerDashboard = () => {
   const [activeTab, setActiveTab] = useState('Overview');
   const [stats, setStats] = useState(null);
   const [doctors, setDoctors] = useState([]);
   const [managerProfile, setManagerProfile] = useState({ name: '', email: '', phone: '', photo: '' });
   const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false); // Controls view state toggling
-  
+  const [isEditing, setIsEditing] = useState(false);
+
   const navigate = useNavigate();
   const contentRef = useRef(null);
 
@@ -26,23 +30,23 @@ const ManagerDashboard = () => {
         }
 
         const [statsRes, docsRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/admin/stats'),
-          axios.get('http://localhost:5000/api/doctor')
+          axios.get(`${API_BASE_URL}/api/admin/stats`),
+          axios.get(`${API_BASE_URL}/api/doctor`)
         ]);
 
         setStats(statsRes.data.data);
-        setDoctors(docsRes.data.data);
-        
+        setDoctors(docsRes.data.data || []);
+
         setManagerProfile({
           name: localStorage.getItem('userName') || 'HMS Administrator',
-          email: 'admin@hms.com', 
-          phone: '9999999999',
-          photo: '' 
+          email: localStorage.getItem('userEmail') || 'admin@gmail.com',
+          phone: localStorage.getItem('userPhone') || '9999999999',
+          photo: localStorage.getItem('userPhoto') || ''
         });
 
         setIsLoading(false);
       } catch (err) {
-        console.error("Failed to load manager data:", err);
+        console.error('Failed to load manager data:', err);
         localStorage.clear();
         navigate('/');
       }
@@ -50,36 +54,88 @@ const ManagerDashboard = () => {
     fetchManagerData();
   }, [navigate]);
 
-  // GSAP Animation for cards
   useEffect(() => {
     if (!isLoading && contentRef.current) {
-      gsap.from(".stat-card", { 
-        opacity: 0, 
-        y: 20, 
-        stagger: 0.15, 
-        duration: 0.6, 
-        ease: "power2.out" 
+      gsap.from('.stat-card', {
+        opacity: 0,
+        y: 20,
+        stagger: 0.15,
+        duration: 0.6,
+        ease: 'power2.out'
       });
     }
   }, [isLoading, activeTab]);
 
-  if (isLoading) return <div className="loading-screen"><h2>Accessing Secure Admin Panel... 🛡️</h2></div>;
+  if (isLoading) {
+    return (
+      <div className="loading-screen">
+        <h2>Accessing Secure Admin Panel... 🛡️</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="manager-dashboard">
       {/* Sidebar */}
       <aside className="manager-sidebar">
         <div className="admin-brand">
-          <div className="brand-icon">🏥</div>
-          <h3>HMS Admin</h3>
+          <div className="brand-icon">
+            {managerProfile.photo ? (
+              <img
+                src={`${UPLOADS_URL}${managerProfile.photo}`}
+                alt={managerProfile.name}
+                className="sidebar-profile-photo"
+              />
+            ) : (
+              '🏥'
+            )}
+          </div>
+          <h3>{managerProfile.name}</h3>
           <p>ID: {localStorage.getItem('userId')}</p>
         </div>
         <ul className="sidebar-menu">
-          <li className={activeTab === 'Overview' ? 'active' : ''} onClick={() => { setActiveTab('Overview'); setIsEditing(false); }}>Hospital Stats</li>
-          <li className={activeTab === 'Doctors' ? 'active' : ''} onClick={() => { setActiveTab('Doctors'); setIsEditing(false); }}>Manage Doctors</li>
-          <li className={activeTab === 'Profile' ? 'active' : ''} onClick={() => { setActiveTab('Profile'); setIsEditing(false); }}>My Profile</li>
-          <li className={activeTab === 'Schedule' ? 'active' : ''} onClick={() => navigate('/manager/schedule')}>📅Doctor Schedules</li> 
-          <li className="logout-btn" onClick={() => { localStorage.clear(); window.location.href = '/'; }}>Logout</li>
+          <li
+            className={activeTab === 'Overview' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('Overview');
+              setIsEditing(false);
+            }}
+          >
+            Hospital Stats
+          </li>
+          <li
+            className={activeTab === 'Doctors' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('Doctors');
+              setIsEditing(false);
+            }}
+          >
+            Manage Doctors
+          </li>
+          <li
+            className={activeTab === 'Profile' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('Profile');
+              setIsEditing(false);
+            }}
+          >
+            My Profile
+          </li>
+          <li
+            className={activeTab === 'Schedule' ? 'active' : ''}
+            onClick={() => navigate('/manager/schedule')}
+          >
+            📅 Doctor Schedules
+          </li>
+          <li
+            className="logout-btn"
+            onClick={() => {
+              localStorage.clear();
+              window.location.href = '/';
+            }}
+          >
+            Logout
+          </li>
         </ul>
       </aside>
 
@@ -96,21 +152,21 @@ const ManagerDashboard = () => {
               <div className="stat-card blue">
                 <span className="icon">👨‍⚕️</span>
                 <div className="stat-info">
-                  <h3>{stats.totalDoctors}</h3>
+                  <h3>{stats?.totalDoctors || 0}</h3>
                   <p>Total Doctors</p>
                 </div>
               </div>
               <div className="stat-card green">
                 <span className="icon">👤</span>
                 <div className="stat-info">
-                  <h3>{stats.totalPatients}</h3>
+                  <h3>{stats?.totalPatients || 0}</h3>
                   <p>Registered Patients</p>
                 </div>
               </div>
               <div className="stat-card purple">
                 <span className="icon">📅</span>
                 <div className="stat-info">
-                  <h3>{stats.totalAppointments}</h3>
+                  <h3>{stats?.totalAppointments || 0}</h3>
                   <p>Total Appointments</p>
                 </div>
               </div>
@@ -128,12 +184,16 @@ const ManagerDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {stats.recentAppointments.map(app => (
+                  {(stats?.recentAppointments || []).map((app) => (
                     <tr key={app._id}>
                       <td>{app.patient_name}</td>
                       <td>{app.doctor_id}</td>
                       <td>{app.date}</td>
-                      <td><span className={`status-pill ${app.status.toLowerCase()}`}>{app.status}</span></td>
+                      <td>
+                        <span className={`status-pill ${app.status.toLowerCase()}`}>
+                          {app.status}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -159,9 +219,11 @@ const ManagerDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {doctors.map(doc => (
+                {doctors.map((doc) => (
                   <tr key={doc._id}>
-                    <td><strong>{doc.doctor_id}</strong></td>
+                    <td>
+                      <strong>{doc.doctor_id}</strong>
+                    </td>
                     <td>{doc.name}</td>
                     <td>{doc.department}</td>
                     <td>{doc.experience} Years</td>
@@ -177,24 +239,44 @@ const ManagerDashboard = () => {
           <div className="manager-profile-tab-section">
             <div className="profile-section-header">
               <h2>Manager Profile Settings</h2>
-              {!isEditing && <button className="btn-corner-edit" onClick={() => setIsEditing(true)}>✏️ Edit Profile</button>}
+              {!isEditing && (
+                <button className="btn-corner-edit" onClick={() => setIsEditing(true)}>
+                  ✏️ Edit Profile
+                </button>
+              )}
             </div>
 
             {!isEditing ? (
               <div className="dash-card profile-details-card">
                 <div className="profile-details-grid">
-                  <div><h4 className="detail-label">Administrative Operator</h4><p className="detail-value">{managerProfile.name}</p></div>
-                  <div><h4 className="detail-label">System Node Communication Email</h4><p className="detail-value">{managerProfile.email}</p></div>
-                  <div><h4 className="detail-label">Secure Access Key ID</h4><p className="detail-value">{localStorage.getItem('userId')}</p></div>
-                  <div><h4 className="detail-label">Phone Endpoint</h4><p className="detail-value">+91 {managerProfile.phone}</p></div>
+                  <div>
+                    <h4 className="detail-label">Administrative Operator</h4>
+                    <p className="detail-value">{managerProfile.name}</p>
+                  </div>
+                  <div>
+                    <h4 className="detail-label">System Node Communication Email</h4>
+                    <p className="detail-value">{managerProfile.email}</p>
+                  </div>
+                  <div>
+                    <h4 className="detail-label">Secure Access Key ID</h4>
+                    <p className="detail-value">{localStorage.getItem('userId')}</p>
+                  </div>
+                  <div>
+                    <h4 className="detail-label">Phone Endpoint</h4>
+                    <p className="detail-value">+91 {managerProfile.phone}</p>
+                  </div>
                 </div>
               </div>
             ) : (
-              <EditProfileComp 
+              <EditProfileComp
                 initialData={managerProfile}
                 role="Manager"
                 onCancel={() => setIsEditing(false)}
                 onUpdateSuccess={(updatedFields) => {
+                  if (updatedFields.photo) localStorage.setItem('userPhoto', updatedFields.photo);
+                  if (updatedFields.name) localStorage.setItem('userName', updatedFields.name);
+                  if (updatedFields.email) localStorage.setItem('userEmail', updatedFields.email);
+                  if (updatedFields.phone) localStorage.setItem('userPhone', updatedFields.phone);
                   setManagerProfile({ ...managerProfile, ...updatedFields });
                   setIsEditing(false);
                 }}

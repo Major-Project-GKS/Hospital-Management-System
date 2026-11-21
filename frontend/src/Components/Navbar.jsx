@@ -4,7 +4,6 @@ import { User, Key, Building2, Menu, X } from 'lucide-react';
 import { gsap } from 'gsap';
 import './Navbar.css';
 
-// Import custom logo from assets folder
 import logoImg from '../assets/logo.png';
 
 const Navbar = () => {
@@ -12,10 +11,8 @@ const Navbar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Clean fail-safe comparison to avoid casing issues
   const isActive = (path) => currentPath.toLowerCase() === path.toLowerCase();
 
-  // --- GSAP Animation Refs ---
   const navRef = useRef(null);
   const brandRef = useRef(null);
   const menuItemsRef = useRef([]);
@@ -33,7 +30,6 @@ const Navbar = () => {
     }
   };
 
-  // Close mobile drawer automatically on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [currentPath]);
@@ -95,17 +91,32 @@ const Navbar = () => {
 
       {/* Right: Desktop Actions + Mobile Quick Login & Hamburger Toggle */}
       <div className="nav-actions">
-        <Link to="/login" className="btn-outline desktop-only-btn text-decoration-none" ref={addToActionRefs}>
+        <Link
+          to="/login"
+          state={{ role: 'Manager', isRegister: false }}
+          className="btn-outline desktop-only-btn text-decoration-none"
+          ref={addToActionRefs}
+        >
           <Building2 size={18} />
           <span>Hospital Admin</span>
         </Link>
 
-        <Link to="/login" className="btn-outline desktop-only-btn text-decoration-none" ref={addToActionRefs}>
+        <Link
+          to="/login"
+          state={{ role: 'Doctor', isRegister: false }}
+          className="btn-outline desktop-only-btn text-decoration-none"
+          ref={addToActionRefs}
+        >
           <User size={18} />
           <span>Doctor Admin</span>
         </Link>
 
-        <Link to="/login" className="btn-solid text-decoration-none" ref={addToActionRefs}>
+        <Link
+          to="/login"
+          state={{ role: 'Patient', isRegister: false }}
+          className="btn-solid text-decoration-none"
+          ref={addToActionRefs}
+        >
           <Key size={18} />
           <span>Login</span>
         </Link>
@@ -143,6 +154,7 @@ const Navbar = () => {
           <div className="mobile-drawer-actions">
             <Link
               to="/login"
+              state={{ role: 'Manager', isRegister: false }}
               className="btn-outline mobile-drawer-btn"
               onClick={() => setMobileMenuOpen(false)}
             >
@@ -151,6 +163,7 @@ const Navbar = () => {
             </Link>
             <Link
               to="/login"
+              state={{ role: 'Doctor', isRegister: false }}
               className="btn-outline mobile-drawer-btn"
               onClick={() => setMobileMenuOpen(false)}
             >
@@ -159,6 +172,7 @@ const Navbar = () => {
             </Link>
             <Link
               to="/login"
+              state={{ role: 'Patient', isRegister: false }}
               className="btn-solid mobile-drawer-btn"
               onClick={() => setMobileMenuOpen(false)}
             >

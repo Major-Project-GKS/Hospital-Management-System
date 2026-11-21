@@ -7,12 +7,13 @@ import { toast } from 'react-toastify';
 import './LoginRegister.css';
 
 const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
+const GMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
 
 const LoginRegister = () => {
   const location = useLocation();
   const [isLogin, setIsLogin] = useState(location.state?.isRegister ? false : true);
   const [isForgot, setIsForgot] = useState(false);
-  const [role, setRole] = useState('Patient');
+  const [role, setRole] = useState(location.state?.role || 'Patient');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const cardRef = useRef(null);
@@ -44,6 +45,9 @@ const LoginRegister = () => {
     if (location.state?.isRegister !== undefined) {
       setIsLogin(!location.state.isRegister);
       setIsForgot(false);
+    }
+    if (location.state?.role) {
+      setRole(location.state.role);
     }
   }, [location.state]);
 
@@ -82,6 +86,7 @@ const LoginRegister = () => {
           localStorage.setItem('role', user.role);
           if (user.phone) localStorage.setItem('userPhone', user.phone);
           if (user.email) localStorage.setItem('userEmail', user.email);
+          if (user.photo) localStorage.setItem('userPhoto', user.photo);
 
           toast.success(`Welcome back, ${user.name}!`);
 
@@ -95,6 +100,11 @@ const LoginRegister = () => {
           setIsSubmitting(false);
           return;
         }
+        if (!GMAIL_REGEX.test(regData.email.trim())) {
+          toast.warning('Please enter a valid @gmail.com email address (e.g., name@gmail.com).');
+          setIsSubmitting(false);
+          return;
+        }
         if (regData.aadhar.length !== 12) {
           toast.warning('Please enter a valid 12-digit identification number.');
           setIsSubmitting(false);
@@ -104,7 +114,7 @@ const LoginRegister = () => {
         const formData = new FormData();
         formData.append('name', regData.name.trim());
         formData.append('phone', regData.phone.trim());
-        formData.append('email', regData.email.trim());
+        formData.append('email', regData.email.trim().toLowerCase());
         formData.append('aadhar_number', regData.aadhar.trim());
         formData.append('password', regData.password);
 
@@ -154,11 +164,17 @@ const LoginRegister = () => {
   const handleResetSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
+
+    if (!GMAIL_REGEX.test(resetData.email.trim())) {
+      toast.warning('Please enter a valid @gmail.com email address.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       const res = await axios.post(`${API_BASE_URL}/auth/reset-password`, {
-        email: resetData.email.trim(),
+        email: resetData.email.trim().toLowerCase(),
         aadhar_number: resetData.aadhar.trim(),
         newPassword: resetData.newPassword
       });
@@ -209,11 +225,14 @@ const LoginRegister = () => {
               </div>
               <form onSubmit={handleResetSubmit} className="workspace-compact-form">
                 <div className="form-group-compact">
-                  <label>Email Address</label>
+                  <label>Gmail Address</label>
                   <input
                     type="email"
-                    placeholder="name@example.com"
+                    pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+                    title="Must be a valid @gmail.com address (e.g., name@gmail.com)"
+                    placeholder="name@gmail.com"
                     required
+                    value={resetData.email}
                     onChange={(e) => setResetData({ ...resetData, email: e.target.value })}
                   />
                 </div>
@@ -363,10 +382,12 @@ const LoginRegister = () => {
 
                     <div className="form-row-grid">
                       <div className="form-group-compact">
-                        <label>Email Address</label>
+                        <label>Gmail Address</label>
                         <input
                           type="email"
-                          placeholder="name@domain.com"
+                          pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+                          title="Must end with @gmail.com (e.g., name@gmail.com)"
+                          placeholder="name@gmail.com"
                           required
                           value={regData.email}
                           onChange={(e) => setRegData({ ...regData, email: e.target.value })}
