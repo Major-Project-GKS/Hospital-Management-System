@@ -1,4 +1,10 @@
-/* Container Restraints for a Strict Single Screen Frame Layout */
+/* src/Pages/Public/BookAppointment.css */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 .booking-single-frame-wrapper {
     max-width: 1440px;
     margin: 0 auto;
@@ -9,25 +15,71 @@
     min-height: calc(100vh - 85px);
     display: flex;
     align-items: center;
-    box-sizing: border-box;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* Mandatory Login / Register Gate Card */
+.auth-required-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    max-width: 520px;
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.lock-icon {
+    font-size: 2.8rem;
+    margin-bottom: 12px;
+}
+
+.auth-required-card h2 {
+    color: #0f172a;
+    font-size: 1.5rem;
+    margin: 0 0 10px 0;
+}
+
+.auth-required-card p {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+.auth-gate-btns {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-register-outline {
+    background-color: #ffffff;
+    color: #059669;
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: 1.5px solid #059669;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.btn-register-outline:hover {
+    background-color: #f0fdf4;
 }
 
 /* Split-Column Framework Rows grid setup */
 .booking-workspace-split {
     display: grid;
-    grid-template-columns: 1fr 340px; /* Split ratio allocating wide area left and fixed context card on right */
+    grid-template-columns: 1fr 340px;
     gap: 25px;
     width: 100%;
     align-items: stretch;
-}
-
-@media (max-width: 900px) {
-    .booking-workspace-split {
-        grid-template-columns: 1fr;
-    }
-    .booking-summary-sidebar-card {
-        display: none; /* Hide summary sidebar layout safely on small mobile nodes */
-    }
 }
 
 /* Left Panel Interactive Active Workspace Card Styles */
@@ -40,13 +92,15 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 440px; /* Compact height bounds layout within a single viewport */
+    min-height: 460px;
+    min-width: 0;
 }
 
 /* Compact Step Status Header Strip */
 .mini-step-indicator-bar {
     display: flex;
     justify-content: space-between;
+    gap: 8px;
     border-bottom: 1px solid #f1f5f9;
     padding-bottom: 14px;
     margin-bottom: 20px;
@@ -62,8 +116,8 @@
 }
 
 .mini-step .dot-index {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background-color: #f1f5f9;
     color: #64748b;
@@ -71,9 +125,9 @@
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
+    flex-shrink: 0;
 }
 
-/* Active and Done color highlights */
 .mini-step.active {
     color: #059669;
 }
@@ -86,15 +140,11 @@
     color: #059669;
 }
 
-@media (max-width: 600px) {
-    .mini-step .dot-label { display: none; } /* Drop wording labels safely on mobile screens */
-}
-
 /* Compact Node Form Row Grid alignment controls */
 .compact-node-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     height: 100%;
 }
 
@@ -105,24 +155,17 @@
     margin: 0 0 4px 0;
 }
 
-.node-title-block p.subtitle, .node-title-block p {
+.node-title-block p {
     margin: 0;
     font-size: 0.88rem;
     color: #64748b;
 }
 
-/* Horizontal Field Rows Layout to optimize height space */
+/* Horizontal Field Rows Layout */
 .form-grid-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-}
-
-@media (max-width: 550px) {
-    .form-grid-row {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
 }
 
 .form-group-node {
@@ -145,6 +188,7 @@
     outline: none;
     background-color: #ffffff;
     color: #1e293b;
+    width: 100%;
     transition: border-color 0.15s ease;
 }
 
@@ -152,12 +196,13 @@
     border-color: #059669;
 }
 
-/* Phone Field Container alignment resets */
+/* Phone Field Container */
 .phone-input-wrapper-node {
     display: flex;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     overflow: hidden;
+    width: 100%;
 }
 
 .phone-input-wrapper-node:focus-within {
@@ -171,6 +216,7 @@
     font-weight: 700;
     color: #475569;
     border-right: 1px solid #cbd5e1;
+    flex-shrink: 0;
 }
 
 .phone-input-wrapper-node input {
@@ -178,9 +224,9 @@
     width: 100%;
 }
 
-/* Fixed Scroll Box frame configuration for Doctor List */
+/* Fixed Scroll Box for Doctor List */
 .doctor-scroll-frame {
-    max-height: 200px; /* Restricts overflow expansion to prevent frame break stretching */
+    max-height: 185px;
     overflow-y: auto;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
@@ -192,11 +238,12 @@
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    padding: 12px 16px;
+    padding: 10px 14px;
     margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     cursor: pointer;
     transition: border-color 0.15s, background-color 0.15s;
 }
@@ -216,24 +263,123 @@
 
 .doc-meta-left h4 {
     margin: 0 0 2px 0;
-    font-size: 1rem;
+    font-size: 0.98rem;
     color: #0f172a;
 }
 
 .doc-meta-left p {
     margin: 0 0 2px 0;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     color: #475569;
 }
 
 .doc-meta-left small {
     color: #94a3b8;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
 }
+
 .fee-token {
     font-weight: 700;
     color: #059669;
     font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+/* Payment Method Selection Box */
+.payment-selection-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.payment-header h4 {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.fee-tag {
+    background: #dcfce7;
+    color: #15803d;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 3px 10px;
+    border-radius: 6px;
+}
+
+.payment-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.payment-option-card {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.payment-option-card:hover {
+    border-color: #059669;
+}
+
+.payment-option-card.selected {
+    border-color: #059669;
+    background: #f0fdf4;
+    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+}
+
+.pay-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.payment-sub-fields {
+    margin-top: 10px;
+}
+
+.payment-sub-fields input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.payment-sub-fields input:focus {
+    border-color: #059669;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 8px;
+}
+
+.cash-note {
+    margin: 10px 0 0 0;
+    font-size: 0.82rem;
+    color: #475569;
+    line-height: 1.4;
 }
 
 /* Action Trigger Button group footer panel rules */
@@ -241,15 +387,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     margin-top: auto;
-    padding-top: 15px;
+    padding-top: 12px;
     border-top: 1px solid #f1f5f9;
 }
 
 .btn-action-primary {
     background-color: #059669;
     color: #ffffff;
-    padding: 10px 22px;
+    padding: 11px 22px;
     border-radius: 8px;
     border: none;
     font-weight: 700;
@@ -270,7 +417,7 @@
 .btn-action-back {
     background-color: #e2e8f0;
     color: #475569;
-    padding: 10px 20px;
+    padding: 11px 20px;
     border-radius: 8px;
     border: none;
     font-weight: 600;
@@ -301,7 +448,7 @@
 .summary-vertical-flow {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
     flex-grow: 1;
 }
 
@@ -337,6 +484,7 @@
     font-size: 0.88rem;
     font-weight: 600;
     color: #334155;
+    word-break: break-word;
 }
 
 .placeholder-text {
@@ -401,6 +549,7 @@
     border-radius: 8px;
     padding: 14px;
     max-width: 440px;
+    width: 100%;
     margin: 0 auto 20px auto;
     text-align: left;
 }
@@ -408,7 +557,9 @@
 .receipt-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
     font-size: 0.88rem;
 }
 
@@ -418,6 +569,16 @@
     font-weight: 700;
     padding: 0 6px;
     border-radius: 4px;
+}
+
+.pay-status-pill.paid {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.pay-status-pill.pending {
+    color: #b45309;
+    font-weight: 700;
 }
 
 .big-serial {
@@ -443,4 +604,112 @@
 .doctor-scroll-frame::-webkit-scrollbar-thumb {
     background-color: #cbd5e1;
     border-radius: 10px;
+}
+
+/* =========================================================
+   MOBILE & TABLET RESPONSIVE STYLES
+   ========================================================= */
+@media (max-width: 900px) {
+    .booking-single-frame-wrapper {
+        padding: 14px 12px;
+        align-items: flex-start;
+    }
+
+    .booking-workspace-split {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Show compact summary below form on mobile instead of hiding it */
+    .booking-summary-sidebar-card {
+        display: flex;
+        padding: 16px;
+    }
+
+    .summary-vertical-flow {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .booking-interactive-card {
+        padding: 16px 14px;
+        min-height: auto;
+    }
+
+    .mini-step-indicator-bar {
+        justify-content: space-around;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+    }
+
+    .mini-step .dot-label {
+        display: none;
+    }
+
+    .node-title-block h2 {
+        font-size: 1.2rem;
+    }
+
+    .form-grid-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .payment-options-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .action-footer-group {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .action-footer-group > div:empty {
+        display: none;
+    }
+
+    .btn-action-primary,
+    .btn-action-back {
+        width: 100%;
+        text-align: center;
+        padding: 12px 16px;
+    }
+
+    .auth-required-card {
+        padding: 1.75rem 1.25rem;
+    }
+
+    .auth-gate-btns {
+        flex-direction: column;
+    }
+
+    .auth-gate-btns button {
+        width: 100%;
+    }
+
+    .summary-vertical-flow {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 380px) {
+    .booking-single-frame-wrapper {
+        padding: 10px 8px;
+    }
+
+    .receipt-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
 }

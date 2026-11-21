@@ -1,10 +1,11 @@
+// src/Pages/Doctor/PatientQueue.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import './PatientQueue.css';
 
 const PatientQueue = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Local Mock State for the Queue
   const [queue, setQueue] = useState([
     { id: 'AP1042', serial: 1, name: 'Rahul Verma', time: '09:00 AM', status: 'Waiting' },
@@ -18,18 +19,21 @@ const PatientQueue = () => {
   // GSAP Animation for table rows
   useEffect(() => {
     if (tableBodyRef.current) {
-      gsap.fromTo(tableBodyRef.current.children, 
+      gsap.fromTo(
+        tableBodyRef.current.children,
         { opacity: 0, x: -20 },
-        { opacity: 1, x: 0, duration: 0.4, stagger: 0.1, ease: "power2.out" }
+        { opacity: 1, x: 0, duration: 0.4, stagger: 0.1, ease: 'power2.out' }
       );
     }
   }, []);
 
   // Handlers
   const handleStatusChange = (id, newStatus) => {
-    setQueue(prevQueue => prevQueue.map(patient => 
-      patient.id === id ? { ...patient, status: newStatus } : patient
-    ));
+    setQueue((prevQueue) =>
+      prevQueue.map((patient) =>
+        patient.id === id ? { ...patient, status: newStatus } : patient
+      )
+    );
   };
 
   const handleUpload = (e, patientName) => {
@@ -40,18 +44,19 @@ const PatientQueue = () => {
   };
 
   // Filter Logic
-  const filteredQueue = queue.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    p.id.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredQueue = queue.filter(
+    (p) =>
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.id.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="patient-queue-component">
       <div className="queue-header">
         <h2>Today's Appointments</h2>
-        <input 
-          type="text" 
-          placeholder="Search name or Appt ID..." 
+        <input
+          type="text"
+          placeholder="🔍 Search name or Appt ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="queue-search"
@@ -74,30 +79,44 @@ const PatientQueue = () => {
             {filteredQueue.length > 0 ? (
               filteredQueue.map((patient) => (
                 <tr key={patient.id} className={patient.status.toLowerCase()}>
-                  <td><strong>#{patient.serial}</strong></td>
-                  <td>{patient.id}</td>
-                  <td>{patient.name}</td>
-                  <td>{patient.time}</td>
-                  <td>
+                  <td data-label="Token">
+                    <strong>#{patient.serial}</strong>
+                  </td>
+                  <td data-label="Appt ID">{patient.id}</td>
+                  <td data-label="Patient Name">{patient.name}</td>
+                  <td data-label="Time">{patient.time}</td>
+                  <td data-label="Status">
                     <span className={`status-pill ${patient.status.toLowerCase()}`}>
                       {patient.status}
                     </span>
                   </td>
-                  <td className="queue-actions">
+                  <td data-label="Actions" className="queue-actions">
                     {patient.status === 'Waiting' && (
-                      <>
-                        <button className="btn-mark complete" onClick={() => handleStatusChange(patient.id, 'Completed')}>✅ Complete</button>
-                        <button className="btn-mark absent" onClick={() => handleStatusChange(patient.id, 'Absent')}>❌ Absent</button>
-                      </>
+                      <div className="queue-btn-group">
+                        <button
+                          className="btn-mark complete"
+                          onClick={() => handleStatusChange(patient.id, 'Completed')}
+                        >
+                          ✅ Complete
+                        </button>
+                        <button
+                          className="btn-mark absent"
+                          onClick={() => handleStatusChange(patient.id, 'Absent')}
+                        >
+                          ❌ Absent
+                        </button>
+                      </div>
                     )}
                     {patient.status === 'Completed' && (
                       <div className="upload-container">
-                        <label htmlFor={`presc-${patient.id}`} className="btn-presc">📄 Upload Prescription</label>
-                        <input 
-                          type="file" 
-                          id={`presc-${patient.id}`} 
+                        <label htmlFor={`presc-${patient.id}`} className="btn-presc">
+                          📄 Upload Prescription
+                        </label>
+                        <input
+                          type="file"
+                          id={`presc-${patient.id}`}
                           accept=".pdf, image/*"
-                          style={{ display: 'none' }} 
+                          style={{ display: 'none' }}
                           onChange={(e) => handleUpload(e, patient.name)}
                         />
                       </div>
@@ -110,7 +129,9 @@ const PatientQueue = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="queue-empty">No patients match your search.</td>
+                <td colSpan="6" className="queue-empty">
+                  No patients match your search.
+                </td>
               </tr>
             )}
           </tbody>

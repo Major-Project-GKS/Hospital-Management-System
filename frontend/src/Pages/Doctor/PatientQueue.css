@@ -1,4 +1,10 @@
 /* src/Pages/Doctor/PatientQueue.css */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 .patient-queue-component {
   width: 100%;
 }
@@ -7,19 +13,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-bottom: 1.5rem;
 }
 
 .queue-header h2 {
   color: var(--primary-color);
   font-size: 1.5rem;
+  margin: 0;
 }
 
 .queue-search {
-  padding: 0.6rem 1rem;
+  padding: 0.65rem 1rem;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 8px;
   width: 300px;
+  max-width: 100%;
   outline: none;
   font-size: 0.95rem;
 }
@@ -31,7 +41,7 @@
 .queue-table-wrapper {
   background-color: var(--white);
   border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
   overflow-x: auto;
 }
 
@@ -40,8 +50,9 @@
   border-collapse: collapse;
 }
 
-.queue-table th, .queue-table td {
-  padding: 1.2rem 1rem;
+.queue-table th,
+.queue-table td {
+  padding: 1.1rem 1rem;
   text-align: left;
   border-bottom: 1px solid #e2e8f0;
 }
@@ -72,6 +83,7 @@
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: bold;
+  display: inline-block;
 }
 
 .status-pill.waiting { background-color: #fef3c7; color: #b45309; }
@@ -85,10 +97,16 @@
   align-items: center;
 }
 
+.queue-btn-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .btn-mark {
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 0.85rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -104,12 +122,13 @@
 .btn-presc {
   background-color: var(--primary-color);
   color: white;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   display: inline-block;
+  text-align: center;
   transition: background-color 0.2s ease;
 }
 
@@ -127,4 +146,94 @@
   text-align: center;
   color: var(--text-light);
   padding: 3rem !important;
+}
+
+/* Mobile View (<= 768px) */
+@media (max-width: 768px) {
+  .queue-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .queue-search {
+    width: 100%;
+  }
+
+  .queue-table-wrapper {
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .queue-table,
+  .queue-table tbody,
+  .queue-table tr,
+  .queue-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .queue-table thead {
+    display: none;
+  }
+
+  .queue-table tbody tr {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .queue-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed #f1f5f9;
+    text-align: right;
+  }
+
+  .queue-table td:last-child {
+    border-bottom: none;
+    padding-top: 12px;
+    padding-bottom: 2px;
+  }
+
+  .queue-table td::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    text-align: left;
+    margin-right: 12px;
+  }
+
+  .queue-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .queue-btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .btn-mark,
+  .upload-container,
+  .btn-presc {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Extra Small Phones (<= 380px) */
+@media (max-width: 380px) {
+  .queue-btn-group {
+    grid-template-columns: 1fr;
+  }
 }

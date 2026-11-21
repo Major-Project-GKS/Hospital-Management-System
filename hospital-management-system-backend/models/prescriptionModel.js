@@ -17,6 +17,21 @@ const prescriptionSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
+  weight: {
+    type: String,
+    required: false,
+    default: ""
+  },
+  bp: {
+    type: String,
+    required: false,
+    default: ""
+  },
+  lab_tests: {
+    type: String,
+    required: false,
+    default: ""
+  },
   diagnosis: { 
     type: String, 
     required: true 
@@ -28,12 +43,12 @@ const prescriptionSchema = new mongoose.Schema({
     },
     dosage: { 
       type: String, 
-      required: true // e.g., "1-0-1" or "1 tablet"
+      required: true 
     }, 
     duration: { 
       type: String, 
-      required: false, // ✅ FIXED: Changed to false to prevent validation crashes
-      default: "As directed" // ✅ FIXED: Fallback if doctor leaves it blank
+      required: false,
+      default: "As directed"
     } 
   }],
   advice: { 
@@ -42,7 +57,6 @@ const prescriptionSchema = new mongoose.Schema({
   },
   date: { 
     type: String, 
-    // ✅ FIXED: Keeps it a function wrapped execution so it evaluates at document generation time, not server boot time
     default: () => new Date().toLocaleDateString('en-CA') 
   }
 }, { timestamps: true });

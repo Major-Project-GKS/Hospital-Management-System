@@ -10,20 +10,26 @@ const addPrescription = async (req, res) => {
       patient_id, 
       doctor_id, 
       doctor_name, 
+      weight,
+      bp,
+      lab_tests,
       diagnosis, 
       medicines, 
       advice 
     } = req.body;
 
-    // 1. Create the prescription record
+    // 1. Create the prescription record with optional vitals & lab tests
     const prescription = await Prescription.create({
       appointment_id,
       patient_id,
       doctor_id,
       doctor_name,
+      weight: weight || '',
+      bp: bp || '',
+      lab_tests: lab_tests || '',
       diagnosis,
       medicines,
-      advice
+      advice: advice || ''
     });
 
     // 2. Update the Appointment status to 'Completed' automatically
