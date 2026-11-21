@@ -8,6 +8,13 @@ import EditProfileComp from '../../Components/EditProfileComp';
 import './DoctorDashboard.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const UPLOADS_URL = `${API_BASE_URL}/uploads/`;
+
+const getPhotoSrc = (photo) => {
+  if (!photo) return null;
+  if (photo.startsWith('data:') || photo.startsWith('http')) return photo;
+  return `${UPLOADS_URL}${photo}`;
+};
 
 const DoctorDashboard = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -16,6 +23,7 @@ const DoctorDashboard = () => {
   const [doctorData, setDoctorData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   // --- Prescription States ---
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
@@ -33,7 +41,6 @@ const DoctorDashboard = () => {
   const navigate = useNavigate();
   const contentRef = useRef(null);
   const modalRef = useRef(null);
-  const UPLOADS_URL = `${API_BASE_URL}/uploads/`;
 
   // 1. Fetch Real Data from Backend
   useEffect(() => {
@@ -47,6 +54,7 @@ const DoctorDashboard = () => {
 
         const res = await axios.get(`${API_BASE_URL}/api/doctor/dashboard/${docId}`);
         setDoctorData(res.data.data);
+        setImgError(false);
         setIsLoading(false);
       } catch (err) {
         console.error('Fetch Error', err);
@@ -171,6 +179,7 @@ const DoctorDashboard = () => {
     );
   }
 
+  const photoSrc = getPhotoSrc(doctorData.profile.photo);
   const waitingCount = doctorData.queue.filter((q) => q.status === 'Waiting').length;
   const holdCount = doctorData.queue.filter((q) => q.status === 'Hold').length;
   const completedCount = doctorData.queue.filter((q) => q.status === 'Completed').length;
@@ -190,11 +199,12 @@ const DoctorDashboard = () => {
       <aside className="dashboard-sidebar">
         <div className="doc-profile">
           <div className="avatar-ring">
-            {doctorData.profile.photo ? (
+            {photoSrc && !imgError ? (
               <img
-                src={`${UPLOADS_URL}${doctorData.profile.photo}`}
-                alt="Doctor"
+                src={photoSrc}
+                alt={`Dr. ${doctorData.profile.name}`}
                 className="sidebar-profile-photo"
+                onError={() => setImgError(true)}
               />
             ) : (
               <span className="avatar-emoji">👨‍⚕️</span>
@@ -561,6 +571,10 @@ const DoctorDashboard = () => {
                 role="Doctor"
                 onCancel={() => setIsEditing(false)}
                 onUpdateSuccess={(updatedFields) => {
+                  if (updatedFields.photo) {
+                    localStorage.setItem('userPhoto', updatedFields.photo);
+                    setImgError(false);
+                  }
                   setDoctorData({
                     ...doctorData,
                     profile: { ...doctorData.profile, ...updatedFields }
