@@ -7,7 +7,6 @@ const Manager = require('../models/managerModel');
 
 const GMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
 
-// Standard Login Logic
 const login = async (req, res) => {
   const { login_id, password } = req.body;
 
@@ -16,26 +15,43 @@ const login = async (req, res) => {
   }
 
   try {
-    const normalizedId = login_id.trim().toUpperCase();
+    const cleanId = login_id.trim();
+    const idRegex = new RegExp(`^${cleanId}$`, 'i'); // Matches DR0001 or dr0001
+    const prefix = cleanId.substring(0, 2).toUpperCase();
+
     let user = null;
     let role = '';
-    const prefix = normalizedId.substring(0, 2);
+    let canonicalId = cleanId.toUpperCase();
 
     if (prefix === 'HM') {
-      user = await Manager.findOne({ manager_id: normalizedId }).select('+password');
+      user = await Manager.findOne({ manager_id: idRegex }).select('+password');
       role = 'Manager';
+      if (user) canonicalId = user.manager_id;
     } else if (prefix === 'DR') {
-      user = await Doctor.findOne({ doctor_id: normalizedId }).select('+password');
+      user = await Doctor.findOne({ doctor_id: idRegex }).select('+password');
       role = 'Doctor';
+      if (user) canonicalId = user.doctor_id;
     } else if (prefix === 'PT') {
-      user = await Patient.findOne({ application_id: normalizedId }).select('+password');
+      user = await Patient.findOne({ application_id: idRegex }).select('+password');
       role = 'Patient';
+      if (user) canonicalId = user.application_id;
     } else {
-      return res.status(400).json({ success: false, message: 'Invalid ID format' });
+      return res.status(400).json({ success: false, message: 'Invalid ID format (Use PT, DR, or HM)' });
     }
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: `No ${role} account found with ID ${cleanId.toUpperCase()}`
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Incorrect password. Use Forgot Password to reset it.'
+      });
     }
 
     const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -44,7 +60,7 @@ const login = async (req, res) => {
       success: true,
       token,
       user: {
-        id: normalizedId,
+        id: canonicalId,
         name: user.name,
         role,
         email: user.email,
@@ -57,7 +73,6 @@ const login = async (req, res) => {
   }
 };
 
-// Reset Password Logic
 const resetPassword = async (req, res) => {
   const { email, aadhar_number, newPassword } = req.body;
 
@@ -69,12 +84,13 @@ const resetPassword = async (req, res) => {
   }
 
   try {
-    const normalizedEmail = email.trim().toLowerCase();
+    const emailRegex = new RegExp(`^${email.trim()}$`, 'i');
+    const cleanAadhar = aadhar_number?.trim();
     let user = null;
     const models = [Patient, Doctor, Manager];
 
     for (let M of models) {
-      user = await M.findOne({ email: normalizedEmail, aadhar_number: aadhar_number?.trim() });
+      user = await M.findOne({ email: emailRegex, aadhar_number: cleanAadhar });
       if (user) break;
     }
 

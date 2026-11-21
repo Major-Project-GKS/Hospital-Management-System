@@ -1,15 +1,23 @@
+// controllers/profileController.js
 const Patient = require('../models/patientModel');
 const Doctor = require('../models/doctorModel');
 const Manager = require('../models/managerModel');
 const fs = require('fs');
 const path = require('path');
 
+const GMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
+
 // @desc    Update User Profile (Photo, Name, Phone, Email)
 // @route   PUT /api/profile/update/:id
 const updateProfile = async (req, res) => {
-  const { id } = req.params;
+  const rawId = req.params.id?.trim();
+  if (!rawId || rawId === 'undefined' || rawId === 'null') {
+    return res.status(400).json({ success: false, message: 'Valid User ID is required. Please log in again.' });
+  }
+
   const { name, phone, email } = req.body;
-  const prefix = id.substring(0, 2).toUpperCase();
+  const prefix = rawId.substring(0, 2).toUpperCase();
+  const idRegex = new RegExp(`^${rawId}$`, 'i');
 
   try {
     let userModel;
@@ -28,19 +36,31 @@ const updateProfile = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid User ID type' });
     }
 
-    // Find the existing user records
-    const user = await userModel.findOne({ [queryField]: id });
+    // Case-insensitive lookup for PT / DR / HM IDs
+    const user = await userModel.findOne({ [queryField]: idRegex });
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User profile not found' });
+      return res.status(404).json({
+        success: false,
+        message: `User profile not found for ID ${rawId.toUpperCase()}`
+      });
     }
 
-    // Update text fields if they are sent in the request
-    if (name) user.name = name;
-    if (phone) user.phone = phone;
-    if (email) user.email = email;
+    // Update text fields
+    if (name) user.name = name.trim();
+    if (phone) user.phone = phone.trim();
+
+    if (email) {
+      if (!GMAIL_REGEX.test(email.trim())) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please provide a valid @gmail.com email address.'
+        });
+      }
+      user.email = email.trim().toLowerCase();
+    }
 
     // =======================================================
-    // SAFE MULTI-METHOD FILE UPLOAD PROCESSING LAYER ✅
+    // PERSISTENT BASE64 PHOTO STORAGE (Survives Render Restarts)
     // =======================================================
     let incomingFile = null;
 
@@ -51,39 +71,51 @@ const updateProfile = async (req, res) => {
     }
 
     if (incomingFile) {
-      // Remove old photo from disk storage safely if it exists
-      if (user.photo) {
+      // Clean up any legacy disk file if user.photo was previously a filename
+      if (user.photo && !user.photo.startsWith('data:')) {
         const oldPath = path.join(__dirname, '..', 'uploads', user.photo);
         if (fs.existsSync(oldPath)) {
           try {
             fs.unlinkSync(oldPath);
           } catch (fsErr) {
-            console.log("Old file link could not be broken or did not exist on path:", fsErr.message);
+            console.log('Old file cleanup skipped:', fsErr.message);
           }
         }
       }
-      // Save new photo filename reference string
-      user.photo = incomingFile.filename;
+
+      // Read uploaded file and store permanently as a Data URL in MongoDB
+      const filePath = incomingFile.path || path.join(__dirname, '..', 'uploads', incomingFile.filename);
+      if (fs.existsSync(filePath)) {
+        const fileBuffer = fs.readFileSync(filePath);
+        const mimeType = incomingFile.mimetype || 'image/jpeg';
+        user.photo = `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
+
+        // Delete temp file from Render's ephemeral disk
+        try {
+          fs.unlinkSync(filePath);
+        } catch (_) {}
+      }
     }
 
     await user.save();
 
-    // Send complete metadata parameters back to prevent state crashes on dashboard sidebars
+    const canonicalId = user.application_id || user.doctor_id || user.manager_id || rawId.toUpperCase();
+
     res.status(200).json({
       success: true,
       message: 'Profile updated successfully!',
       data: {
+        id: canonicalId,
         name: user.name,
         phone: user.phone,
         email: user.email,
         photo: user.photo,
-        application_id: user.application_id || id,
-        doctor_id: user.doctor_id || id,
-        manager_id: user.manager_id || id,
+        application_id: user.application_id || canonicalId,
+        doctor_id: user.doctor_id || canonicalId,
+        manager_id: user.manager_id || canonicalId,
         department: user.department || ''
       }
     });
-
   } catch (error) {
     console.error('Profile Update Server Error:', error);
     res.status(500).json({ success: false, message: error.message });

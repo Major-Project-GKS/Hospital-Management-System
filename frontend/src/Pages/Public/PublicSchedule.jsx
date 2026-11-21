@@ -1,39 +1,41 @@
+// src/Pages/Public/PublicSchedule.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './PublicSchedule.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const UPLOADS_URL = `${API_BASE_URL}/uploads/`;
+
 const PublicSchedule = () => {
   const [doctors, setDoctors] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [selectedSpecialization, setSelectedSpecialization] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
-  
+  const [failedImages, setFailedImages] = useState({});
+
   const navigate = useNavigate();
-  // Standardized URL base (removed trailing slashes to prevent route parsing dropouts)
-  const UPLOADS_URL = 'http://localhost:5000/uploads/';
 
   useEffect(() => {
     const fetchPublicDirectory = async () => {
       try {
-        // 1. Fetch doctors independently from the core endpoint
-        const docsRes = await axios.get('http://localhost:5000/api/doctor');
+        // 1. Fetch doctors independently from the live backend endpoint
+        const docsRes = await axios.get(`${API_BASE_URL}/api/doctor`);
         setDoctors(docsRes.data.data || []);
-        
+
         // 2. Safe, decoupled fallback block to load rosters without crashing main state
         try {
-          const scheduleRes = await axios.get('http://localhost:5000/api/appointment/schedule/all');
+          const scheduleRes = await axios.get(`${API_BASE_URL}/api/appointment/schedule/all`);
           setSchedules(scheduleRes.data.data || []);
         } catch (scheduleErr) {
-          console.warn("⚠️ Shift rosters empty or unconfigured yet:", scheduleErr);
-          setSchedules([]); // Fallback grace state to prevent app failure
+          console.warn('Shift rosters empty or unconfigured yet:', scheduleErr);
+          setSchedules([]);
         }
-
-        setIsLoading(false);
       } catch (err) {
-        console.error("Error loading directory data:", err);
-        toast.error("Unable to load medical staff directory list.");
+        console.error('Error loading directory data:', err);
+        toast.error('Unable to load medical staff directory list.');
+      } finally {
         setIsLoading(false);
       }
     };
@@ -45,7 +47,7 @@ const PublicSchedule = () => {
     navigate('/appointment');
   };
 
-  const filteredDoctors = doctors.filter(doc => {
+  const filteredDoctors = doctors.filter((doc) => {
     if (selectedSpecialization === 'All') return true;
     return doc.department?.trim().toLowerCase() === selectedSpecialization.trim().toLowerCase();
   });
@@ -67,10 +69,10 @@ const PublicSchedule = () => {
           <h1>Our Specialized Medical Staff</h1>
           <p>Find trusted medical professionals and view real-time dynamic day availability options.</p>
         </div>
-        
+
         <div className="filter-controls-container">
-          <select 
-            value={selectedSpecialization} 
+          <select
+            value={selectedSpecialization}
             onChange={(e) => setSelectedSpecialization(e.target.value)}
             className="specialization-select-dropdown"
           >
@@ -79,6 +81,7 @@ const PublicSchedule = () => {
             <option value="Cardiology">Cardiology</option>
             <option value="Neurology">Neurology</option>
             <option value="Orthopedics">Orthopedics</option>
+            <option value="Pediatrics">Pediatrics</option>
           </select>
         </div>
       </header>
@@ -87,14 +90,22 @@ const PublicSchedule = () => {
       {filteredDoctors.length > 0 ? (
         <div className="directory-grid-matrix horizontal-cards">
           {filteredDoctors.map((doc) => {
-            const docRosters = schedules.filter(s => s.doctor_id === doc.doctor_id);
+            const docRosters = schedules.filter((s) => s.doctor_id === doc.doctor_id);
+            const showPhoto = doc.photo && !failedImages[doc._id];
 
             return (
               <div key={doc._id} className="doctor-directory-card horizontal-split">
                 {/* Left Side: Photo Frame */}
                 <div className="card-image-left-wrapper">
-                  {doc.photo ? (
-                    <img src={`${UPLOADS_URL}${doc.photo}`} alt={`Dr. ${doc.name}`} className="doctor-card-img-contain" />
+                  {showPhoto ? (
+                    <img
+                      src={`${UPLOADS_URL}${doc.photo}`}
+                      alt={`Dr. ${doc.name}`}
+                      className="doctor-card-img-contain"
+                      onError={() =>
+                        setFailedImages((prev) => ({ ...prev, [doc._id]: true }))
+                      }
+                    />
                   ) : (
                     <div className="doctor-fallback-avatar">👨‍⚕️</div>
                   )}
@@ -121,7 +132,9 @@ const PublicSchedule = () => {
                         {docRosters.map((sched) => (
                           <div key={sched._id} className="active-day-time-pill-mini">
                             <span className="pilled-day-name-mini">{sched.day_of_week}:</span>
-                            <span className="pilled-time-frame-mini">{sched.shift_start} - {sched.shift_end}</span>
+                            <span className="pilled-time-frame-mini">
+                              {sched.shift_start} - {sched.shift_end}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -130,8 +143,8 @@ const PublicSchedule = () => {
                     )}
                   </div>
 
-                  <button 
-                    onClick={() => handleBookClick(doc.doctor_id)} 
+                  <button
+                    onClick={() => handleBookClick(doc.doctor_id)}
                     className="btn-trigger-appointment-booking-mini"
                   >
                     📅 Book Appointment

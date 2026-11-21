@@ -7,7 +7,23 @@
     color: #1e293b;
     background-color: #f8fafc;
     box-sizing: border-box;
-    overflow: hidden; /* Restricts view breaks */
+    overflow: hidden;
+}
+
+.directory-loading-container,
+.empty-directory-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    color: #475569;
+}
+
+.pulse-loader {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
 }
 
 /* Compact Header */
@@ -21,7 +37,7 @@
     padding: 12px 20px;
     border-radius: 10px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .compact-hero .hero-content h1 {
@@ -52,16 +68,16 @@
 /* Horizontal Responsive Multi-Column Matrix Layout Grid */
 .directory-grid-matrix.horizontal-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); /* Two columns fit cleanly inside standard displays side-by-side */
+    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
     gap: 15px;
-    max-height: calc(100vh - 110px); /* Keeps workspace dynamically bounded within browser view */
+    max-height: calc(100vh - 110px);
     overflow-y: auto;
     padding-right: 4px;
 }
 
 @media (max-width: 950px) {
     .directory-grid-matrix.horizontal-cards {
-        grid-template-columns: 1fr; /* Switch safely back to stacked panel rows for smaller screens */
+        grid-template-columns: 1fr;
     }
 }
 
@@ -71,8 +87,8 @@
     border-radius: 10px;
     border: 1px solid #e2e8f0;
     display: flex;
-    flex-direction: row; /* Aligns photo panel on left side alongside text data on right side */
-    height: 185px; /* Restricts vertical size to maintain compact structure */
+    flex-direction: row;
+    height: 185px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -80,23 +96,35 @@
 
 .doctor-directory-card.horizontal-split:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
 }
 
 /* Left Photo Panel Container Frame */
 .card-image-left-wrapper {
     position: relative;
-    width: 145px; /* Fixed proportional structural horizontal footprint */
+    width: 145px;
     height: 100%;
     background-color: #ebf0f5;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .doctor-card-img-contain {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Shows portrait view without distortion */
-    object-position: center 10%; /* Vertically tracks face alignment */
+    object-fit: cover;
+    object-position: center 10%;
+}
+
+.doctor-fallback-avatar {
+    font-size: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 .department-badge-pill-corner {
@@ -118,7 +146,7 @@
     padding: 12px 16px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Spreads structural elements cleanly across the fixed height */
+    justify-content: space-between;
     flex-grow: 1;
     overflow: hidden;
 }
@@ -147,13 +175,13 @@
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: 600;
+    flex-shrink: 0;
 }
 
 /* Demographic Data Inline Row Layout */
 .demographic-metadata-row-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: x;
     column-gap: 14px;
     row-gap: 2px;
 }
@@ -182,7 +210,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    max-height: 52px; /* Allows 2 shift records to display cleanly */
+    max-height: 52px;
     overflow-y: auto;
 }
 
